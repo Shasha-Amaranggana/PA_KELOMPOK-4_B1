@@ -1,5 +1,6 @@
 import inquirer
 import re
+import menu_bos
 
 print("haloo bang")
 
@@ -58,25 +59,6 @@ def register():
     except ValueError:
         input("→ 「 Enter untuk kembali 」")
         return None
-
-def menu_bos():
-    while True:
-        questions = [
-            inquirer.List(
-                "menu",
-                message="Pilih menu:",
-                choices=[
-                    "1. Akun",
-                    "2. Daftar Produk",
-                    "3. Logout"])]
-        answer = inquirer.prompt(questions)["menu"]
-
-        if answer == "1. Akun":
-            print("Akun")
-        elif answer == "2. Daftar Produk":
-            print("Daftar Produk")
-        elif answer == "3. Logout":
-            break
 
 def menu_seller():
     while True:
