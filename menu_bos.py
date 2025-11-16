@@ -1,6 +1,9 @@
 import inquirer
+from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan
 
 def menu_boss():
+    jud_utama()
+    jud_sub("Selamat Datang Bos!")
     while True:
         questions = [
             inquirer.List(
@@ -17,4 +20,5 @@ def menu_boss():
         elif answer == "2. Daftar Produk":
             print("Daftar Produk")
         elif answer == "3. Logout":
+            pesan_berhasil("Logout Berhasil!")
             break
