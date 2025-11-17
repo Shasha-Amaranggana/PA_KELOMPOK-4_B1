@@ -21,10 +21,10 @@ def inp_menu():
     menu = input("╰┈➤  Pilih menu: ")
     return menu
 
-def inp_nochar():
+def inp_no():
     print("")
     print(("═"*50).center(60))
-    menu = input("╰┈➤  Masukkan nomor karakter yang ingin diupdate: ")
+    menu = input("╰┈➤  Masukkan nomor yang ingin dipilih (jika ingin kembali, ketik 'kembali'): ")
     print("")
     return menu
 
