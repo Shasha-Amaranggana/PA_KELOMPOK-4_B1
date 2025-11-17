@@ -1,6 +1,7 @@
 import inquirer
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan
-from fungsi_umum import daftar_akun, daftar_produk
+from fungsi_umum import daftar_produk
+from fungsi_bos import hapus_rating, daftar_akun, laporan
 
 def menu_boss():
     while True:
@@ -22,9 +23,6 @@ def menu_boss():
             jud_utama()
             jud_sub("Daftar Akun")
             daftar_akun()
-            print("")
-            print("═"*60)
-            input("→ 「 Enter untuk kembali 」")
         elif answer == "2. Daftar Produk":
             jud_utama()
             jud_sub("Daftar Produk")
@@ -33,9 +31,19 @@ def menu_boss():
             print("═"*60)
             input("→ 「 Enter untuk kembali 」")
         elif answer == "3. Hapus Rating":
-            print("d")
+            jud_utama()
+            jud_sub("Hapus Rating")
+            hapus_rating()
+            print("")
+            print("═"*60)
+            input("→ 「 Enter untuk kembali 」")
         elif answer == "4. Laporan Penjualan":
-            print("Laporan Penjualan")
+            jud_utama()
+            jud_sub("Laporan Penjualan")
+            laporan()
+            print("")
+            print("═"*60)
+            input("→ 「 Enter untuk kembali 」")
         elif answer == "5. Logout":
             pesan_berhasil("Logout Berhasil!")
             break

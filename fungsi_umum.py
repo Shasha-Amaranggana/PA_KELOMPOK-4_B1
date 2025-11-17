@@ -1,5 +1,4 @@
 from data import akun, produk
-import inquirer
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_no
 
 
