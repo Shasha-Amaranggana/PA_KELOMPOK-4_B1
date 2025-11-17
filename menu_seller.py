@@ -20,7 +20,7 @@ pesanan_list = [
     {
     "id_pesanan": 1,
     "nama_user": "Ghina",
-    "produk": "Caramel - Medium",
+    "produk": "Matcha - Medium",
     "jumlah": 2,
     "total_harga": 20000,
     "status_pesanan": ""
