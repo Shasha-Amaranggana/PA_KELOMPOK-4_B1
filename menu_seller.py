@@ -74,3 +74,86 @@ def menu_seller():
             menu_status_pemesanan()
         elif menu == "Logout":
             break
+
+# menu akun
+def menu_akun():
+    while True:
+        clear()
+        print("=== MENU AKUN SELLER ===")
+        pertanyaan = [
+            inquirer.List(
+                "menu_akun",
+                message="Pilih menu:",
+                choices=[
+                    "Lihat Data Diri",
+                    "Edit Data Diri",
+                    "Kembali"
+                ]
+            )
+        ]
+        jawaban = inquirer.prompt(pertanyaan)
+        if jawaban is None:
+            break
+
+        pilihan = jawaban["menu_akun"]
+
+        if pilihan == "Lihat Data Diri":
+            lihat_data_diri()
+        elif pilihan == "Edit Data Diri":
+            edit_data_diri()
+        elif pilihan == "Kembali":
+            break
+
+
+def lihat_data_diri():
+    clear()
+    print("=== DATA DIRI SELLER ===")
+
+    table = PrettyTable()
+    table.field_names = ["Field", "Data"]
+
+    table.add_row(["Username", current_seller.get("username", "-")])
+    table.add_row(["Nama", current_seller.get("nama", "-")])
+    table.add_row(["Email", current_seller.get("email", "-")])
+    table.add_row(["No. HP", current_seller.get("no_hp", "-")])
+
+    table.align["Field"] = "l"
+    table.align["Data"] = "l"
+
+    print(table)
+    input("Tekan enter untuk kembali ke Menu Akun...")
+
+
+def edit_data_diri():
+    clear()
+    print("=== EDIT DATA DIRI SELLER ===")
+    print(Fore.YELLOW + "Biarkan default jika tidak ingin mengubah.\n")
+
+    pertanyaan = [
+        inquirer.Text(
+            "nama",
+            message="Nama baru",
+            default=current_seller.get("nama", "")
+        ),
+        inquirer.Text(
+            "email",
+            message="Email baru",
+            default=current_seller.get("email", "")
+        ),
+        inquirer.Text(
+            "no_hp",
+            message="No. HP baru",
+            default=current_seller.get("no_hp", "")
+        )
+    ]
+
+    jawaban = inquirer.prompt(pertanyaan)
+    if jawaban is None:
+        return
+
+    current_seller["nama"] = jawaban["nama"] or current_seller["nama"]
+    current_seller["email"] = jawaban["email"] or current_seller["email"]
+    current_seller["no_hp"] = jawaban["no_hp"] or current_seller["no_hp"]
+
+    print(Fore.GREEN + "Data diri berhasil diperbarui!")
+    input("Tekan enter untuk kembali ke Menu Akun...")
