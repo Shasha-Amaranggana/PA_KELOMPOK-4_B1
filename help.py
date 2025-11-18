@@ -24,7 +24,7 @@ def inp_menu():
 def inp_no():
     print("")
     print(("═"*50).center(60))
-    menu = input("╰┈➤  Masukkan nomor yang ingin dipilih (jika ingin kembali, ketik 'kembali'): ")
+    menu = input("╰┈➤  Masukkan nomor yang ingin dipilih (jika ingin kembali, ketik 'kembali'): ").strip().lower()
     print("")
     return menu
 

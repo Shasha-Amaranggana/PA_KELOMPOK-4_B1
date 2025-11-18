@@ -1,7 +1,7 @@
 import inquirer
 import re
-from data import akun, produk
-from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_no
+from data import akun
+from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan
 from fungsi_umum import daftar_produk
 
 # FUNGSI BOS 1
@@ -77,7 +77,7 @@ def hapus_rating():
         jud_utama()
         jud_sub("Hapus Rating")
         daftar_produk()
-        no_char = inp_no()
+        no_char = input("Masukkan nomor produk (atau ketik 'kembali' untuk keluar): ").strip().lower()
         if no_char == "kembali":
             return None
         if not no_char.isdigit():
@@ -137,7 +137,7 @@ def menu_akun_seller():
             jud_sub("Daftar Produk")
             regist_seller()
         elif answer == "3. Ubah Status Akun Seller":
-            stat_seller()
+            status_seller()
         elif answer == "4. Aktivitas Akun Seller":
             akt_seller()
         elif answer == "5. Kembali":
@@ -241,7 +241,8 @@ def stat_seller():
         jud_sub("Status Seller")
         daftar_seller()
         global akun
-        no_char = inp_no()
+        print("\nKetik 'kembali' untuk keluar.")
+        no_char = input("Pilih nomor akun seller: ").strip()
         if no_char == "kembali":
             return None
         if not no_char.isdigit():
@@ -262,15 +263,12 @@ def stat_seller():
         if tindakan == "1":
             akun[akun_id]["status"] = "Aktif"
             pesan_berhasil("Akun berhasil diaktifkan!")
-            return
         elif tindakan == "2":
             akun[akun_id]["status"] = "Nonaktif"
             pesan_berhasil("Akun berhasil dinonaktifkan!")
-            return
         elif tindakan == "3":
             del akun[akun_id]
             pesan_berhasil("Akun berhasil dihapus!")
-            return
         else:
             pesan_peringatan("Pilihan tindakan tidak valid!", 15)
             continue
