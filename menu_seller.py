@@ -417,5 +417,39 @@ def delete_produk():
         produk_list.remove(produk)
         print(Fore.GREEN + "Produk berhasil dihapus.")
     else:
-        print(Fore.YELLOW + "Produk batal dihapus.")
+        print(Fore.RED + "Produk batal dihapus.")
     input("Tekan enter untuk kembali...")
+
+# menu pembelian
+def menu_pembelian():
+    clear()
+    print("=== MENU PEMBELIAN ===")
+
+    if not pesanan_list:
+        print(Fore.RED + "Belum ada data pembelian / pesanan.")
+    else:
+        total_transaksi = len(pesanan_list)
+        total_omzet = sum(p["total_harga"] for p in pesanan_list)
+
+        print(f"Total Transaksi : {total_transaksi}")
+        print(f"Total Omzet     : Rp{total_omzet}")
+        print("-" * 30)
+
+        table = PrettyTable()
+        table.field_names = ["ID", "Nama User", "Total Harga", "Status"]
+
+        for psn in pesanan_list:
+            table.add_row([
+                psn["id_pesanan"],
+                psn["nama_user"],
+                f"Rp{psn['total_harga']}",
+                psn.get("status_pesanan", "")
+            ])
+
+        table.align["ID"] = "c"
+        table.align["Nama User"] = "l"
+        table.align["Total Harga"] = "r"
+        table.align["Status"] = "c"
+        print(table)
+
+    input("Tekan enter untuk kembali ke Menu Seller...")
