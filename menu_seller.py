@@ -1,5 +1,9 @@
 import os
 import inquirer
+from prettytable import PrettyTable
+from colorama import Fore, Style
+from colorama import Fore, Style, init
+
 
 current_seller = {
     "username": "seller1",
@@ -20,9 +24,12 @@ pesanan_list = [
     {
     "id_pesanan": 1,
     "nama_user": "Ghina",
-    "produk": "Matcha - Medium",
+    "produk": "CarNMamel - Medium",
     "jumlah": 2,
     "total_harga": 20000,
     "status_pesanan": ""
     }
 ]
+
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
