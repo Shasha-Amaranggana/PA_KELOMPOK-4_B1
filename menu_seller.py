@@ -36,3 +36,41 @@ pesanan_list = []
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
+
+# MENU SELLER UTAMA
+def menu_seller():
+    while True:
+        clear()
+        print("=== MENU SELLER POPCORN ===")
+        pertanyaan_menu = [
+            inquirer.List(
+                "menu",
+                message="Pilih menu:",
+                choices=[
+                    "Akun",
+                    "Penjualan",
+                    "Pembelian",
+                    "Pemesanan",
+                    "Status Pemesanan",
+                    "Logout"
+                ]
+            )
+        ]
+        jawaban = inquirer.prompt(pertanyaan_menu)
+        if jawaban is None:
+            break
+
+        menu = jawaban["menu"]
+
+        if menu == "Akun":
+            menu_akun()
+        elif menu == "Penjualan":
+            menu_penjualan()
+        elif menu == "Pembelian":
+            menu_pembelian()
+        elif menu == "Pemesanan":
+            menu_pemesanan()
+        elif menu == "Status Pemesanan":
+            menu_status_pemesanan()
+        elif menu == "Logout":
+            break
