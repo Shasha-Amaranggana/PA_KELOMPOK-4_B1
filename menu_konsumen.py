@@ -1,7 +1,6 @@
 import inquirer
 from help import jud_utama, jud_sub, pesan_berhasil
-from fungsi_konsumen import lihat_akun, lihat_produk, keranjang_belanja, pesanan_anda, riwayat, rating, saldo
-
+from fungsi_konsumen import lihat_akun, lihat_produk
 def menu_konsumen(username):
     while True:
         jud_utama()
