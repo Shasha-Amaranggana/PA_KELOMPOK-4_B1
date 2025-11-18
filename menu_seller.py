@@ -589,3 +589,113 @@ def hapus_pemesanan():
     else:
         print(Fore.RED + "Pemesanan batal dihapus.")
     input("Tekan enter untuk kembali...")
+
+# menu status pemesanan
+def menu_status_pemesanan():
+    while True:
+        clear()
+        print("=== MENU STATUS PEMESANAN ===")
+        pertanyaan = [
+            inquirer.List(
+                "menu_status",
+                message="Pilih menu:",
+                choices=[
+                    "Buat Status Pesanan Awal",
+                    "Lihat Status Pesanan",
+                    "Kembali"
+                ]
+            )
+        ]
+        jawaban = inquirer.prompt(pertanyaan)
+        if jawaban is None:
+            break
+
+        pilihan = jawaban["menu_status"]
+
+        if pilihan == "Buat Status Pesanan Awal":
+            buat_status_pesanan_awal()
+        elif pilihan == "Lihat Status Pesanan":
+            lihat_status_pesanan()
+        elif pilihan == "Kembali":
+            break
+
+def buat_status_pesanan_awal():
+    clear()
+    print("=== BUAT STATUS PESANAN AWAL ===")
+    pesanan_tanpa_status = [p for p in pesanan_list if not p.get("status_pesanan")]
+
+    if not pesanan_tanpa_status:
+        print(Fore.YELLOW + "Tidak ada pesanan yang belum memiliki status.")
+        input("Tekan enter untuk kembali...")
+        return
+
+    pilihan_pesanan = [
+        inquirer.List(
+            "id_pesanan",
+            message="Pilih pesanan yang akan diberi status awal:",
+            choices=[f"{p['id_pesanan']} - {p['nama_user']} ({p['produk']})" for p in pesanan_tanpa_status]
+        )
+    ]
+    jawaban = inquirer.prompt(pilihan_pesanan)
+    if jawaban is None:
+        return
+
+    teks = jawaban["id_pesanan"]
+    id_terpilih = int(teks.split(" - ")[0])
+
+    pesanan = next((p for p in pesanan_list if p["id_pesanan"] == id_terpilih), None)
+
+    if not pesanan:
+        print(Fore.RED + "Pesanan tidak ditemukan.")
+        input("Tekan enter untuk kembali...")
+        return
+
+    status_awal_choices = ["Menunggu", "Diproses", "Dikonfirmasi"]
+    tanya_status = [
+        inquirer.List(
+            "status_awal",
+            message="Pilih status pesanan awal:",
+            choices=status_awal_choices
+        )
+    ]
+    jawab_status = inquirer.prompt(tanya_status)
+    if jawab_status is None:
+        return
+
+    pesanan["status_pesanan"] = jawab_status["status_awal"]
+
+    print(Fore.GREEN + f"Status pesanan ID {pesanan['id_pesanan']} berhasil diatur menjadi '{pesanan['status_pesanan']}'.")
+    input("Tekan enter untuk kembali...")
+
+def lihat_status_pesanan():
+    clear()
+    title = "STATUS PEMESANAN"
+    print(title.center(70, "="))
+
+    if not pesanan_list:
+        print(Fore.YELLOW + "Belum ada pesanan.")
+    else:
+        table = PrettyTable()
+        table.field_names = [
+            "ID Pesanan",
+            "Nama User",
+            "Produk",
+            "Jumlah",
+            "Total Harga",
+            "Status"
+        ]
+
+        for psn in pesanan_list:
+            table.add_row([
+                psn["id_pesanan"],
+                psn["nama_user"],
+                psn["produk"],
+                psn["jumlah"],
+                f"Rp{psn['total_harga']}",
+                psn.get("status_pesanan", "(belum ada status)")
+            ])
+        for field in table.field_names:
+            table.align[field] = "c"
+        table.align["Produk"] = "l"
+        print(table)
+    input("Tekan enter untuk kembali...")
