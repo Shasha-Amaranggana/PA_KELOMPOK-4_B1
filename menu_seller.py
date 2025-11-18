@@ -422,11 +422,42 @@ def delete_produk():
 
 # menu pembelian
 def menu_pembelian():
+    while True:
+        clear()
+        print("=== MENU PEMBELIAN ===")
+        pertanyaan = [
+            inquirer.List(
+                "menu_pembelian",
+                message="Pilih menu:",
+                choices=[
+                    "Lihat Ringkasan Pembelian",
+                    "Pemesanan",
+                    "Status Pemesanan",
+                    "Kembali"
+                ]
+            )
+        ]
+        jawaban = inquirer.prompt(pertanyaan)
+        if jawaban is None:
+            break
+
+        pilihan = jawaban["menu_pembelian"]
+
+        if pilihan == "Lihat Ringkasan Pembelian":
+            lihat_ringkasan_pembelian()
+        elif pilihan == "Pemesanan":
+            menu_pemesanan()
+        elif pilihan == "Status Pemesanan":
+            menu_status_pemesanan()
+        elif pilihan == "Kembali":
+            break
+
+def lihat_ringkasan_pembelian():
     clear()
-    print("=== MENU PEMBELIAN ===")
+    print("=== RINGKASAN PEMBELIAN ===")
 
     if not pesanan_list:
-        print(Fore.RED + "Belum ada data pembelian / pesanan.")
+        print(Fore.YELLOW + "Belum ada data pembelian / pesanan.")
     else:
         total_transaksi = len(pesanan_list)
         total_omzet = sum(p["total_harga"] for p in pesanan_list)
@@ -452,4 +483,109 @@ def menu_pembelian():
         table.align["Status"] = "c"
         print(table)
 
-    input("Tekan enter untuk kembali ke Menu Seller...")
+    input("Tekan enter untuk kembali...")
+
+# menu pemesanan
+def menu_pemesanan():
+    while True:
+        clear()
+        print("=== MENU PEMESANAN ===")
+        pertanyaan = [
+            inquirer.List(
+                "menu_pemesanan",
+                message="Pilih menu:",
+                choices=[
+                    "Lihat Pemesanan",
+                    "Hapus Pemesanan",
+                    "Kembali"
+                ]
+            )
+        ]
+        jawaban = inquirer.prompt(pertanyaan)
+        if jawaban is None:
+            break
+
+        pilihan = jawaban["menu_pemesanan"]
+
+        if pilihan == "Lihat Pemesanan":
+            lihat_pemesanan()
+        elif pilihan == "Hapus Pemesanan":
+            hapus_pemesanan()
+        elif pilihan == "Kembali":
+            break
+
+def lihat_pemesanan():
+    clear()
+    title = "DAFTAR PEMESANAN"
+    print(title.center(70, "="))
+
+    if not pesanan_list:
+        print(Fore.YELLOW + "Belum ada pemesanan.")
+    else:
+        table = PrettyTable()
+        table.field_names = [
+            "ID Pesanan",
+            "Nama User",
+            "Produk",
+            "Jumlah",
+            "Total Harga",
+            "Status"
+        ]
+
+        for psn in pesanan_list:
+            table.add_row([
+                psn["id_pesanan"],
+                psn["nama_user"],
+                psn["produk"],
+                psn["jumlah"],
+                f"Rp{psn['total_harga']}",
+                psn.get("status_pesanan", "")
+            ])
+        for field in table.field_names:
+            table.align[field] = "c"
+        table.align["Produk"] = "l"
+        print(table)
+    input("Tekan enter untuk kembali...")
+
+def hapus_pemesanan():
+    clear()
+    if not pesanan_list:
+        print(Fore.YELLOW + "Belum ada pemesanan yang bisa dihapus.")
+        input("Tekan enter untuk kembali...")
+        return
+
+    pilihan_pesanan = [
+        inquirer.List(
+            "id_pesanan",
+            message="Pilih pemesanan yang akan dihapus:",
+            choices=[f"{p['id_pesanan']} - {p['nama_user']} ({p['produk']})" for p in pesanan_list]
+        )
+    ]
+    jawaban = inquirer.prompt(pilihan_pesanan)
+    if jawaban is None:
+        return
+
+    teks = jawaban["id_pesanan"]
+    id_terpilih = int(teks.split(" - ")[0])
+
+    pesanan = next((p for p in pesanan_list if p["id_pesanan"] == id_terpilih), None)
+
+    if not pesanan:
+        print(Fore.RED + "Pemesanan tidak ditemukan.")
+        input("Tekan enter untuk kembali...")
+        return
+
+    konfirmasi = [
+        inquirer.Confirm(
+            "yakin",
+            message=f"Yakin ingin menghapus pemesanan ID {pesanan['id_pesanan']}?",
+            default=False
+        )
+    ]
+    jawab_konfirmasi = inquirer.prompt(konfirmasi)
+    if jawab_konfirmasi and jawab_konfirmasi["yakin"]:
+        pesanan_list.remove(pesanan)
+        print(Fore.GREEN + "Pemesanan berhasil dihapus.")
+    else:
+        print(Fore.RED + "Pemesanan batal dihapus.")
+    input("Tekan enter untuk kembali...")
