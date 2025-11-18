@@ -3,33 +3,36 @@ import inquirer
 from prettytable import PrettyTable
 from colorama import Fore, Style
 from colorama import Fore, Style, init
+init(autoreset=True)
 
 
 current_seller = {
     "username": "seller1",
-    "nama": "Khanza",
+    "nama": "khanza",
     "email": "seller1@gmail.com",
     "no_hp": "08123456789"
 }
 
-# daftar produk popcorn
+## daftar produk popcorn
 produk_list = [
-    {"id": 1, "varian": "Caramel", "kemasan": "Small", "harga": 5000, "status": "Tersedia"},
-    {"id" : 2, "varian": "Matcha", "kemasan" : "Medium", "harga" : 10000, "status": "Tersedia"},
-    {"id" : 3, "varian": "Choco", "kemasan" : "Large", "harga" : 15000, "status": "Habis"}
+    # popcorn rasa caramel
+    {"id": "C1", "varian": "Caramel",  "kemasan": "Small",  "harga": 5000,  "status": "Tersedia"},
+    {"id": "C2", "varian": "Caramel",  "kemasan": "Medium", "harga": 10000, "status": "Tersedia"},
+    {"id": "C3", "varian": "Caramel",  "kemasan": "Large",  "harga": 18000, "status": "Tersedia"},
+
+    # popcorn rasa blueberry
+    {"id": "B1", "varian": "Blueberry","kemasan": "Small",  "harga": 5000,  "status": "Tersedia"},
+    {"id": "B2", "varian": "Blueberry","kemasan": "Medium", "harga": 10000, "status": "Tersedia"},
+    {"id": "B3", "varian": "Blueberry","kemasan": "Large",  "harga": 18000, "status": "Tersedia"},
+
+    # popcorn rasa matcha
+    {"id": "M1", "varian": "Matcha",   "kemasan": "Small",  "harga": 5000,  "status": "Tersedia"},
+    {"id": "M2", "varian": "Matcha",   "kemasan": "Medium", "harga": 10000, "status": "Tersedia"},
+    {"id": "M3", "varian": "Matcha",   "kemasan": "Large",  "harga": 18000, "status": "Tersedia"},
 ]
 
-# daftar pesanan (dari user)
-pesanan_list = [
-    {
-    "id_pesanan": 1,
-    "nama_user": "Ghina",
-    "produk": "CarNMamel - Medium",
-    "jumlah": 2,
-    "total_harga": 20000,
-    "status_pesanan": ""
-    }
-]
+# kosong karena perlu input dari user
+pesanan_list = []
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
