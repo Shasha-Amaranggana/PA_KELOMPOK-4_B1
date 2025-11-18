@@ -47,9 +47,7 @@ def hapus_rating():
         break   # keluar setelah sukses
 
 def laporan():
-    while True:
-        jud_utama()
-        jud_sub("Menu Akun Seller")
+    print("belum kepikiran")
 
 def menu_akun_seller():
     while True:
