@@ -3,6 +3,8 @@ import re
 from menu_bos import menu_boss
 from data import akun
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan
+from menu_seller import menu_seller
+from menu_konsumen import menu_konsumen
 
 def login():
     jud_utama()
@@ -23,8 +25,8 @@ def login():
                     menu_boss()
                 elif user["role"] == "seller":
                     menu_seller()
-                else:
-                    menu_konsumen()
+                elif user["role"] == "konsumen":
+                    menu_konsumen(username)
                 input("→ 「 Enter untuk kembali 」")
                 return
         if not found:
@@ -67,7 +69,9 @@ def register():
                     str(len(akun)+1): {
                         "us": username,
                         "pw": password,
-                        "st": "pengguna"}})
+                        "role": "konsumen",
+                        "status" : "Aktif",
+                        "tgl" : ""}})
                 pesan_berhasil("Registrasi berhasil! Silakan login.") 
                 input("→ 「 Enter untuk kembali 」")
                 return True
