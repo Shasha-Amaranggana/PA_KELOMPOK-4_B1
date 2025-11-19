@@ -2,7 +2,6 @@ import inquirer
 import re
 from data import akun
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan
-from fungsi_umum import daftar_produk
 
 # FUNGSI BOS 1
 # ════════════════════════════════════════════════════
@@ -70,7 +69,7 @@ def daftar_akun():
         elif answer == "2. Menu Akun Konsumen":
             menu_akun_konsumen()
         elif answer == "3. Kembali":
-            break
+            menu_boss()
 
 def hapus_rating():
     while True:
