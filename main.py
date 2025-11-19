@@ -1,8 +1,11 @@
 import inquirer
 import re
 from menu_bos import menu_boss
-from data import akun
+from menu_seller import menu_seller
+from menu_konsumen import menu_konsumen
+from data import akun, save_akun_to_csv
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan
+
 
 def login():
     jud_utama()
@@ -19,9 +22,9 @@ def login():
                 found = True
                 pesan_berhasil(f"Login berhasil! Selamat datang, {username}!")
                 input("→ 「 Enter untuk lanjut 」")
-                if user["role"] == "bos":
+                if user.get("role") == "bos":
                     menu_boss()
-                elif user["role"] == "seller":
+                elif user.get("role") == "seller":
                     menu_seller()
                 else:
                     menu_konsumen()
@@ -35,7 +38,7 @@ def login():
         return None
 
 
-    
+
 def register():
     jud_utama()
     jud_sub("Silakan Registrasi")
@@ -63,17 +66,25 @@ def register():
                     if user["us"] == username:
                         pesan_peringatan("User telah tersedia", 12)
                         raise ValueError
+                new_id = str(len(akun) + 1)
                 akun.update({
-                    str(len(akun)+1): {
+                    new_id: {
                         "us": username,
                         "pw": password,
-                        "st": "pengguna"}})
-                pesan_berhasil("Registrasi berhasil! Silakan login.") 
+                        "role": "konsumen",
+                        "status": "Aktif",
+                        "tgl": ""
+                    }
+                })
+                # Simpan perubahan akun ke CSV
+                save_akun_to_csv(akun)
+                pesan_berhasil("Registrasi berhasil! Silakan login.")
                 input("→ 「 Enter untuk kembali 」")
                 return True
     except ValueError:
         input("→ 「 Enter untuk kembali 」")
         return None
+
 
 while True:
     jud_utama()
