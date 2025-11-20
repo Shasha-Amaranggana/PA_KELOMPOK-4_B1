@@ -1,8 +1,7 @@
 import inquirer
 import re
-from data import akun
+from data import akun, produk_list
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan
-from fungsi_umum import daftar_produk
 
 # FUNGSI BOS 1
 # ════════════════════════════════════════════════════
@@ -17,9 +16,8 @@ def menu_boss():
                 choices=[
                     "1. Daftar Akun",
                     "2. Daftar Produk",
-                    "3. Hapus Rating",
-                    "4. Laporan Penjualan",
-                    "5. Logout"])]
+                    "3. Laporan Penjualan",
+                    "4. Logout"])]
         answer = inquirer.prompt(questions)["menu"]
         if answer == "1. Daftar Akun":
             jud_utama()
@@ -32,21 +30,14 @@ def menu_boss():
             print("")
             print("═"*60)
             input("→ 「 Enter untuk kembali 」")
-        elif answer == "3. Hapus Rating":
-            jud_utama()
-            jud_sub("Hapus Rating")
-            hapus_rating()
-            print("")
-            print("═"*60)
-            input("→ 「 Enter untuk kembali 」")
-        elif answer == "4. Laporan Penjualan":
+        elif answer == "3. Laporan Penjualan":
             jud_utama()
             jud_sub("Laporan Penjualan")
             laporan()
             print("")
             print("═"*60)
             input("→ 「 Enter untuk kembali 」")
-        elif answer == "5. Logout":
+        elif answer == "4. Logout":
             pesan_berhasil("Logout Berhasil!")
             break
 
@@ -72,38 +63,15 @@ def daftar_akun():
         elif answer == "3. Kembali":
             break
 
-def hapus_rating():
-    while True:
-        jud_utama()
-        jud_sub("Hapus Rating")
-        daftar_produk()
-        no_char = input("Masukkan nomor produk (atau ketik 'kembali' untuk keluar): ").strip().lower()
-        if no_char == "kembali":
-            return None
-        if not no_char.isdigit():
-            pesan_peringatan("Input harus berupa angka!", 15)
-            continue
-        no_char = int(no_char)
-        if not (1 <= no_char <= len(daftar_produk)):
-            pesan_peringatan("Nomor produk tidak ditemukan!", 15)
-        nomor = list(daftar_produk.keys())[no_char - 1]
-        if nomor == "update":
-            pesan_peringatan("Produk ini tidak bisa dihapus!", 15)
-            continue
-        pesan_berhasil("Rating berhasil dihapus!")
-        break
-
 def daftar_produk():
-    global produk
-    if len(produk) == 0:
-        pesan_berhasil("Daftar produk belum ada.")
-    else:
-        print("ID     NAMA       UKURAN     HARGA      STOK       RATE")
-        print("──" * 30)
-        no = 1
-        for nomor, k in produk.items():
-            print(no,"| ", k["nm"], " "*(14 - len(k["nm"])), k["sz"], " "*(9 - len(k["sz"])), k["pz"], " "*(11 - len(k["pz"])), k["stk"], " "*(9 - len(k["stk"])), k["rt"])
-            no = no + 1
+    global produk_list
+    if len(produk_list) == 0:
+        print("Daftar produk belum ada.")
+        return
+    print("NO  ID   VARIAN       KEMASAN     HARGA      STATUS")
+    print("──" * 30)
+    for idx, p in enumerate(produk_list, start=1):
+        print(f"{idx:<3} {p['id']:<4} {p['varian']:<12} {p['kemasan']:<10} {p['harga']:<10} {p['status']}")
 
 def laporan():
     print("belum kepikiran")
@@ -122,8 +90,7 @@ def menu_akun_seller():
                     "1. Daftar Akun Seller",
                     "2. Buat Akun Seller",
                     "3. Ubah Status Akun Seller",
-                    "4. Aktivitas Akun Seller",
-                    "5. Kembali"])]
+                    "4. Kembali"])]
         answer = inquirer.prompt(questions)["menu"]
         if answer == "1. Daftar Akun Seller":
             jud_utama()
@@ -137,10 +104,8 @@ def menu_akun_seller():
             jud_sub("Daftar Produk")
             regist_seller()
         elif answer == "3. Ubah Status Akun Seller":
-            status_seller()
-        elif answer == "4. Aktivitas Akun Seller":
-            akt_seller()
-        elif answer == "5. Kembali":
+            stat_seller()
+        elif answer == "4. Kembali":
             break
 
 def menu_akun_konsumen():
@@ -154,8 +119,7 @@ def menu_akun_konsumen():
                 choices=[
                     "1. Daftar Akun Konsumen",
                     "2. Ubah Status Akun Konsumen",
-                    "3. Aktivitas Akun Konsumen",
-                    "4. Kembali"])]
+                    "3. Kembali"])]
         answer = inquirer.prompt(questions)["menu"]
         if answer == "1. Daftar Akun Konsumen":
             jud_utama()
@@ -165,10 +129,8 @@ def menu_akun_konsumen():
             print("═"*60)
             input("→ 「 Enter untuk kembali 」")
         elif answer == "2. Ubah Status Akun Konsumen":
-            status_konsumen()
-        elif answer == "3. Aktivitas Akun Konsumen":
-            akt_konsumen()
-        elif answer == "4. Kembali":
+            stat_konsumen()
+        elif answer == "3. Kembali":
             break
 
 # FUNGSI BOS 4
@@ -279,7 +241,7 @@ def daftar_konsumen():
     global akun
     konsumen_list = {}
     for nomor, k in akun.items():
-        if k["role"] == "seller":
+        if k["role"] == "konsumen":
             konsumen_list[nomor] = k
     if len(konsumen_list) == 0:
         pesan_berhasil("Daftar akun konsumen belum ada.")
@@ -295,3 +257,41 @@ def daftar_konsumen():
                 k["status"], " " * (11 - len(k["status"])),
                 k["tgl"])
             no += 1
+
+def stat_konsumen():
+    while True:
+        jud_utama()
+        jud_sub("Status Konsumen")
+        daftar_konsumen()
+        global akun
+        print("\nKetik 'kembali' untuk keluar.")
+        no_char = input("Pilih nomor akun seller: ").strip()
+        if no_char == "kembali":
+            return None
+        if not no_char.isdigit():
+            pesan_peringatan("Input harus berupa angka!", 15)
+            continue
+        no_char = int(no_char)
+        daftar_konsumen_ids = list({nomor: k for nomor, k in akun.items() if k["role"] == "konsumen"}.keys())
+        if not (1 <= no_char <= len(daftar_konsumen_ids)):
+            pesan_peringatan("Nomor akun seller tidak ditemukan!", 15)
+            continue
+        akun_id = daftar_konsumen_ids[no_char - 1]
+        data_konsumen = akun[akun_id]
+        print("\nPKonfirmasi status akun:")
+        print("1. Aktifkan akun")
+        print("2. Nonaktifkan akun")
+        print("3. Hapus akun")
+        tindakan = input("Masukkan pilihan: ").strip()
+        if tindakan == "1":
+            akun[akun_id]["status"] = "Aktif"
+            pesan_berhasil("Akun berhasil diaktifkan!")
+        elif tindakan == "2":
+            akun[akun_id]["status"] = "Nonaktif"
+            pesan_berhasil("Akun berhasil dinonaktifkan!")
+        elif tindakan == "3":
+            del akun[akun_id]
+            pesan_berhasil("Akun berhasil dihapus!")
+        else:
+            pesan_peringatan("Pilihan tindakan tidak valid!", 15)
+            continue
