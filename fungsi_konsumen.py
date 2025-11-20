@@ -1,6 +1,5 @@
 import inquirer
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan
-from menu_bos import daftar_produk
 
 def lihat_akun():
     while True:

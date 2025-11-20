@@ -9,7 +9,6 @@ from menu_konsumen import menu_konsumen
 def login():
     jud_utama()
     jud_sub("Silakan Login")
-    
     username = input("Username: ".center(40))
     password = input("Password: ".center(40))
     try:
@@ -20,6 +19,9 @@ def login():
         for nomor, user in akun.items():
             if user["us"] == username and user["pw"] == password:
                 found = True
+                if user["status"].lower() != "aktif":
+                    pesan_peringatan(f"Akun '{username}' saat ini {user['status']}. Tidak bisa login!", 30)
+                    raise ValueError
                 pesan_berhasil(f"Login berhasil! Selamat datang, {username}!")
                 input("→ 「 Enter untuk lanjut 」")
                 if user["role"] == "bos":
@@ -36,8 +38,6 @@ def login():
     except ValueError:
         input("→ 「 Enter untuk kembali 」")
         return None
-
-
     
 def register():
     jud_utama()
@@ -102,6 +102,3 @@ while True:
     elif answer == "3. Keluar":
         print("Program selesai. Terima kasih!")
         break
-
-
-    
