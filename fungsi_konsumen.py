@@ -44,9 +44,6 @@ def lihat_produk():
             pilih_produk()
         elif answer == "2. Kembali":
             break
-
-        import inquirer
-
 def keranjang_belanja(username):
 
     while True:
