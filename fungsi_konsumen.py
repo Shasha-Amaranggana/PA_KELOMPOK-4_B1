@@ -43,10 +43,10 @@ def lihat_produk():
         answer = inquirer.prompt(questions)["menu"]
 
         if answer == "1. Belanja":
-            pilih_produk()
+            pesanan_anda()
         elif answer == "2. Kembali":
             break
-def keranjang_belanja(username):
+def keranjang_belanja():
 
     while True:
         jud_utama()
@@ -59,19 +59,91 @@ def keranjang_belanja(username):
                 choices=[
                     "1. Lihat Keranjang Belanja",
                     "2. Edit Keranjang Belanja",
-                    "3. Kembali"
-                ]
-            )
-        ]
+                    "3. Kembali"])]
 
         answer = inquirer.prompt(questions)["menu"]
 
         if answer == "1. Lihat Keranjang Belanja":
-            lihat_keranjang(id_akun)
+            lihat_keranjang()
 
         elif answer == "2. Edit Keranjang Belanja":
-            edit_keranjang(id_akun)
+            edit_keranjang()
 
         elif answer == "3. Kembali":
             break
 
+def pesanan_anda():
+
+    while True:
+        jud_utama()
+        jud_sub("Pesan")
+        daftar_produk()  
+        questions = [
+            inquirer.List(
+                "menu",
+                message="Pilih menu:",
+                choices=[
+                    "1. Tambah ke Keranjang",
+                    "2. Beli Sekarang",
+                    "3. Kembali"])]
+
+        answer = inquirer.prompt(questions)["menu"]
+
+        if answer == "1. Tambah ke Keranjang":
+            tambah_keranjang()
+
+        elif answer == "2. Beli Sekarang":
+            beli_sekarang()
+
+        elif answer == "3. Kembali":
+            break
+
+def riwayat():
+    while True:
+        jud_utama()
+        jud_sub("Riwayat")
+
+        questions = [
+            inquirer.List(
+                "menu",
+                message="Pilih menu:",
+                choices=[
+                    "1. Riwayat pemesanan",
+                    "2. Edit pemesanan(Cancel)",
+                    "3. Kembali"])]
+
+        answer = inquirer.prompt(questions)["menu"]
+
+        if answer == "1. Riwayat pemesanan":
+            riwayat_pemesanan()
+
+        elif answer == "2. Edit pemesanan(Cancel)":
+            edit_pemesanan()
+
+        elif answer == "3. Kembali":
+            break
+
+def saldo():
+    while True:
+        jud_utama()
+        jud_sub("Saldo")
+
+        questions = [
+            inquirer.List(
+                "menu",
+                message="Pilih menu:",
+                choices=[
+                    "1. Saldo anda",
+                    "2. Top up",
+                    "3. Kembali"])]
+
+        answer = inquirer.prompt(questions)["menu"]
+
+        if answer == "1. Saldo anda":
+            cek_saldo()
+
+        elif answer == "2. Top up":
+            top_up()
+
+        elif answer == "3. Kembali":
+            break
