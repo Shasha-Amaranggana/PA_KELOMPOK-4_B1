@@ -431,8 +431,6 @@ def menu_pembelian():
                 message="Pilih menu:",
                 choices=[
                     "Lihat Ringkasan Pembelian",
-                    "Pemesanan",
-                    "Status Pemesanan",
                     "Kembali"
                 ]
             )
@@ -445,45 +443,8 @@ def menu_pembelian():
 
         if pilihan == "Lihat Ringkasan Pembelian":
             lihat_ringkasan_pembelian()
-        elif pilihan == "Pemesanan":
-            menu_pemesanan()
-        elif pilihan == "Status Pemesanan":
-            menu_status_pemesanan()
         elif pilihan == "Kembali":
             break
-
-def lihat_ringkasan_pembelian():
-    clear()
-    print("=== RINGKASAN PEMBELIAN ===")
-
-    if not pesanan_list:
-        print(Fore.YELLOW + "Belum ada data pembelian / pesanan.")
-    else:
-        total_transaksi = len(pesanan_list)
-        total_omzet = sum(p["total_harga"] for p in pesanan_list)
-
-        print(f"Total Transaksi : {total_transaksi}")
-        print(f"Total Omzet     : Rp{total_omzet}")
-        print("-" * 30)
-
-        table = PrettyTable()
-        table.field_names = ["ID", "Nama User", "Total Harga", "Status"]
-
-        for psn in pesanan_list:
-            table.add_row([
-                psn["id_pesanan"],
-                psn["nama_user"],
-                f"Rp{psn['total_harga']}",
-                psn.get("status_pesanan", "")
-            ])
-
-        table.align["ID"] = "c"
-        table.align["Nama User"] = "l"
-        table.align["Total Harga"] = "r"
-        table.align["Status"] = "c"
-        print(table)
-
-    input("Tekan enter untuk kembali...")
 
 # menu pemesanan
 def menu_pemesanan():
