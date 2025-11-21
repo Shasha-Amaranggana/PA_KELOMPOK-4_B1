@@ -1,20 +1,9 @@
-keranjang = {
+keranjang = {}
 
-}
+pesanan = {}
 
-pesanan = {
+riwayat = {}
 
-}
+rating = {}
 
-riwayat = {
-
-}
-
-rating = {
-
-}
-
-
-saldo = {
-
-}
+saldo = {}

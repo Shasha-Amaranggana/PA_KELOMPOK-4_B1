@@ -1,4 +1,5 @@
 import os
+import inquirer
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -41,3 +42,4 @@ def pesan_peringatan(pesan, jumlah):
     print(pesan)
     print("──" * jumlah)
     print("")
+
