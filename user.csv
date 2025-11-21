@@ -1,4 +1,4 @@
-ID,US,PW,ROLE,STATUS,DATE
-U_B1,1,1,Bos,Aktif,2025-10-10
-U_S1,2,2,Seller,Aktif,2025-10-10
-U_K1,3,3,Konsumen,Aktif,2025-10-10
+id,us,pw,role,status,tgl
+1,1,1,Bos,Aktif,
+2,2,2,Seller,Aktif,
+3,3,3,Konsumen,Aktif,
