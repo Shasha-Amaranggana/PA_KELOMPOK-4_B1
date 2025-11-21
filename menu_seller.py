@@ -1,3 +1,4 @@
+import csv
 import os
 import inquirer
 from prettytable import PrettyTable
@@ -13,23 +14,44 @@ current_seller = {
     "no_hp": "08123456789"
 }
 
-## daftar produk popcorn
-produk_list = [
-    # popcorn rasa caramel
-    {"id": "C1", "varian": "Caramel",  "kemasan": "Small",  "harga": 5000,  "status": "Tersedia"},
-    {"id": "C2", "varian": "Caramel",  "kemasan": "Medium", "harga": 10000, "status": "Tersedia"},
-    {"id": "C3", "varian": "Caramel",  "kemasan": "Large",  "harga": 18000, "status": "Tersedia"},
+# daftar produk popcorn
+NAMA_FILE_PRODUK = "produk.csv"
 
-    # popcorn rasa blueberry
-    {"id": "B1", "varian": "Blueberry","kemasan": "Small",  "harga": 5000,  "status": "Tersedia"},
-    {"id": "B2", "varian": "Blueberry","kemasan": "Medium", "harga": 10000, "status": "Tersedia"},
-    {"id": "B3", "varian": "Blueberry","kemasan": "Large",  "harga": 18000, "status": "Tersedia"},
+def load_produk_from_csv():
+    global produk_list
+    produk_list = []
 
-    # popcorn rasa matcha
-    {"id": "M1", "varian": "Matcha",   "kemasan": "Small",  "harga": 5000,  "status": "Tersedia"},
-    {"id": "M2", "varian": "Matcha",   "kemasan": "Medium", "harga": 10000, "status": "Tersedia"},
-    {"id": "M3", "varian": "Matcha",   "kemasan": "Large",  "harga": 18000, "status": "Tersedia"},
-]
+    if not os.path.exists(NAMA_FILE_PRODUK):
+        return 
+
+    with open(NAMA_FILE_PRODUK, mode="r", newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            produk = {
+                "id": row["id"],
+                "varian": row["varian"],
+                "kemasan": row["kemasan"],
+                "harga": int(row["harga"]),
+                "status": row["status"]
+            }
+            produk_list.append(produk)
+
+def save_produk_to_csv():
+    fieldnames = ["id", "varian", "kemasan", "harga", "status"]
+
+    with open(NAMA_FILE_PRODUK, mode="w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for p in produk_list:
+            writer.writerow({
+                "id": p["id"],
+                "varian": p["varian"],
+                "kemasan": p["kemasan"],
+                "harga": p["harga"],
+                "status": p["status"]
+            })
+
+
 
 # kosong karena perlu input dari user
 pesanan_list = []
@@ -445,6 +467,39 @@ def menu_pembelian():
             lihat_ringkasan_pembelian()
         elif pilihan == "Kembali":
             break
+
+def lihat_ringkasan_pembelian():
+    clear()
+    print("=== RINGKASAN PEMBELIAN ===")
+
+    if not pesanan_list:
+        print(Fore.YELLOW + "Belum ada data pembelian / pesanan.")
+    else:
+        total_transaksi = len(pesanan_list)
+        total_omzet = sum(p["total_harga"] for p in pesanan_list)
+
+        print(f"Total Transaksi : {total_transaksi}")
+        print(f"Total Omzet     : Rp{total_omzet}")
+        print("-" * 30)
+
+        table = PrettyTable()
+        table.field_names = ["ID", "Nama User", "Total Harga", "Status"]
+
+        for psn in pesanan_list:
+            table.add_row([
+                psn["id_pesanan"],
+                psn["nama_user"],
+                f"Rp{psn['total_harga']}",
+                psn.get("status_pesanan", "")
+            ])
+
+        table.align["ID"] = "c"
+        table.align["Nama User"] = "l"
+        table.align["Total Harga"] = "r"
+        table.align["Status"] = "c"
+        print(table)
+
+    input("Tekan enter untuk kembali...")
 
 # menu pemesanan
 def menu_pemesanan():
