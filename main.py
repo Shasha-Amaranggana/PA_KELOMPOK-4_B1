@@ -2,16 +2,17 @@ import inquirer
 import re
 from datetime import datetime
 from menu_bos import menu_boss
-from data import akun, save_akun_to_csv
+from data import akun, save_akun_to_csv, current_seller
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan
-from menu_seller import menu_seller
 from menu_konsumen import menu_konsumen
+from menu_seller import menu_seller
 
 def login():
+    global current_seller
     jud_utama()
     jud_sub("Silakan Login")
-    username = input("Username: ".center(40))
-    password = input("Password: ".center(40))
+    username = input("Username: ".center(45))
+    password = input("Password: ".center(45))
     try:
         if username == "" or password == "":
             pesan_peringatan("Semua kolom harus diisi!", 12)
@@ -28,7 +29,9 @@ def login():
                 if user["role"] == "Bos":
                     menu_boss()
                 elif user["role"] == "Seller":
-                    menu_seller()
+                    current_seller = user
+                    menu_seller(current_seller)
+                    return
                 elif user["role"] == "Konsumen":
                     menu_konsumen(username)
                 input("→ 「 Enter untuk kembali 」")
@@ -47,38 +50,44 @@ def register():
     print("     tidak mengandung karakter spesial!")
     print("   > Password min 8 karakter, mengandung huruf besar & kecil & angka,")
     print("     tidak mengandung karakter spesial!")
+    print("   > Email harus valid dan berakhiran '@gmail.com'")
+    print("   > No. HP harus valid dan berawalan '08'")
     print("")
-    username = input("Username: ".center(40))
-    password = input("Password: ".center(40))
+    username = input("Username: ".center(40)).strip()
+    password = input("Password: ".center(40)).strip()
+    email = input("Email: ".center(40)).strip()
+    no_hp = input("No HP: ".center(40)).strip()
     try:
-        if username == "" or password == "":
+        if username == "" or password == "" or email == "" or no_hp == "":
             pesan_peringatan("Semua kolom harus diisi!", 12)
-            raise ValueError
-        elif not re.search(r"^[a-zA-Z0-9]{5,}$", username):
-            pesan_peringatan("Sesuaikan dengan syarat yang tersedia", 12)
-            raise ValueError
-        else:
-            pola_pw = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$"
-            if not re.search(pola_pw, password):
-                pesan_peringatan("Sesuaikan dengan syarat yang tersedia", 12)
-                raise ValueError
-            else:
-                for nomor, user in akun.items():
-                    if user["us"] == username:
-                        pesan_peringatan("User telah tersedia", 12)
-                        raise ValueError
-                akun.update({
-                    str(len(akun)+1): {
-                        "us": username,
-                        "pw": password,
-                        "role": "Konsumen",
-                        "status" : "Aktif",
-                        "tgl" : datetime.now().strftime("%Y-%m-%d")}})
-                save_akun_to_csv(akun)
-                pesan_berhasil("Registrasi berhasil! Silakan login.") 
+            input("→ 「 Enter untuk kembali 」")
+            return None
+        for user in akun.values():
+            if user["us"] == username or user["email"] == email:
+                pesan_peringatan("User atau email telah tersedia", 12)
                 input("→ 「 Enter untuk kembali 」")
-                return True
+                return None
+        existing_ids = [k for k in akun.keys() if k.startswith("U_K")]
+        last_num = max([int(k.split("_")[1]) for k in existing_ids], default=0)
+        new_id = f"U_K{last_num + 1}"
+        akun.update({
+            new_id: {
+                "id": new_id,
+                "us": username,
+                "pw": password,
+                "role": "Konsumen",
+                "status": "Aktif",
+                "tgl": datetime.now().strftime("%Y-%m-%d"),
+                "email": email,
+                "no_hp": no_hp,
+                "alamat": "",
+                "saldo": 0}})
+        save_akun_to_csv(akun)
+        pesan_berhasil(f"Anda berhasil registrasi! Silakan login.")
+        input("→ 「 Enter untuk kembali 」")
+        return True
     except ValueError:
+        pesan_peringatan("Pastikan data yang diinput sesuai syarat!", 12)       
         input("→ 「 Enter untuk kembali 」")
         return None
 
@@ -88,12 +97,12 @@ while True:
     questions = [
         inquirer.List(
             "menu",
-            message="Pilih menu:",
+            message="Pilih menu",
             choices=[
-                "1 | LOGIN",
-                "2 | REGISTER",
-                "3 | KELUAR"])]
-    answer = inquirer.prompt(questions)["menu"]
+                "1 | LOGIN".center(33),
+                "2 | REGISTER".center(35),
+                "3 | KELUAR".center(33)])]
+    answer = inquirer.prompt(questions)["menu"].strip()
 
     if answer == "1 | LOGIN":
         login()
@@ -102,5 +111,5 @@ while True:
     elif answer == "3 | KELUAR":
         jud_utama()
         jud_sub("Terima kasih telah menggunakam program kami!")
-        print("(Trauma buat nih program, help)".center(60))
+        print("(Trauma buat nih program, help)".center(70))
         break

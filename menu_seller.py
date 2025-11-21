@@ -4,170 +4,104 @@ import inquirer
 from prettytable import PrettyTable
 from colorama import Fore, Style
 from colorama import Fore, Style, init
+from data import akun, produk_list, save_produk_to_csv
+from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_no
 init(autoreset=True)
 
-
-current_seller = {
-    "username": "seller1",
-    "nama": "khanza",
-    "email": "seller1@gmail.com",
-    "no_hp": "08123456789"
-}
-
-# daftar produk popcorn
-NAMA_FILE_PRODUK = "produk.csv"
-
-def load_produk_from_csv():
-    global produk_list
-    produk_list = []
-
-    if not os.path.exists(NAMA_FILE_PRODUK):
-        return 
-
-    with open(NAMA_FILE_PRODUK, mode="r", newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            produk = {
-                "id": row["id"],
-                "varian": row["varian"],
-                "kemasan": row["kemasan"],
-                "harga": int(row["harga"]),
-                "status": row["status"]
-            }
-            produk_list.append(produk)
-
-def save_produk_to_csv():
-    fieldnames = ["id", "varian", "kemasan", "harga", "status"]
-
-    with open(NAMA_FILE_PRODUK, mode="w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        for p in produk_list:
-            writer.writerow({
-                "id": p["id"],
-                "varian": p["varian"],
-                "kemasan": p["kemasan"],
-                "harga": p["harga"],
-                "status": p["status"]
-            })
-
-
-
-# kosong karena perlu input dari user
 pesanan_list = []
 
-def clear():
-    os.system('cls' if os.name == 'nt' else 'clear')
+def tamp_sell(jenis):
+    message = "Silakan pilih menu"
+    daftar_menu = {
+        "1": ['1 │ AKUN'.center(31), '2 │ PENJUALAN'.center(37), '3 │ PEMBELIAN'.center(37),  '4 │ PEMESANAN'.center(37), '5 │ STATUS PEMESANAN'.center(43), '6 │ LOGOUT'.center(33)],
+        "2.1" : ['1 │ LIHAT DATA DIRI'.center(43), '2 │ EDIT DATA DIRI'.center(42), '3 │ KEMBALI'.center(35)],
+        "2.2" : ['1 │ TAMBAH PRODUK'.center(41), '2 │ LIHAT PRODUK'.center(33), '3 │ EDIT PRODUK'.center(41), '4 │ HAPUS PRODUK'.center(25), '5 │ KEMBALI'.center(35)],
+        "2.3" : ['1 │ LIHAT RINGKASAN PEMBELIAN'.center(37), '2 │ KEMBALI'.center(35)],
+        "2.4" : ['1 │ LIHAT PEMESANAN'.center(33), '2 │ HAPUS PEMESANAN'.center(35), '3 │ KEMBALI'.center(35)],
+        "2.5" : ['1 │ BUAT STATUS AWAL PESANAN'.center(33), '2 │ LIHAT STATUS PESANAN'.center(35), '3 │ KEMBALI'.center(35)]}
+    choices = daftar_menu[jenis]
+    answer = inquirer.prompt([
+        inquirer.List(
+            'menu',
+            message = message,
+            choices = choices)])
+    pilihan = answer['menu'].strip()
+    return pilihan 
 
 # MENU SELLER UTAMA
-def menu_seller():
+# ════════════════════════════════════════════════════
+def menu_seller(current_seller):
     while True:
-        clear()
-        print("=== MENU SELLER POPCORN ===")
-        pertanyaan_menu = [
-            inquirer.List(
-                "menu",
-                message="Pilih menu:",
-                choices=[
-                    "Akun",
-                    "Penjualan",
-                    "Pembelian",
-                    "Pemesanan",
-                    "Status Pemesanan",
-                    "Logout"
-                ]
-            )
-        ]
-        jawaban = inquirer.prompt(pertanyaan_menu)
-        if jawaban is None:
-            break
-
-        menu = jawaban["menu"]
-
-        if menu == "Akun":
-            menu_akun()
-        elif menu == "Penjualan":
+        jud_utama()
+        jud_sub("Selamat Datang Seller!")
+        pilih = tamp_sell("1")
+        if pilih == "1 │ AKUN":
+            menu_akun(current_seller)
+        elif pilih == "2 │ PENJUALAN":
             menu_penjualan()
-        elif menu == "Pembelian":
+        elif pilih == "3 │ PEMBELIAN":
             menu_pembelian()
-        elif menu == "Pemesanan":
+        elif pilih == "4 │ PEMESANAN":
             menu_pemesanan()
-        elif menu == "Status Pemesanan":
+        elif pilih == "5 │ STATUS PEMESANAN":
             menu_status_pemesanan()
-        elif menu == "Logout":
+        elif pilih == "6 │ LOGOUT":
             break
 
-# menu akun
-def menu_akun():
+# MENU AKUN
+# ════════════════════════════════════════════════════
+def menu_akun(current_seller):
     while True:
-        clear()
-        print("=== MENU AKUN SELLER ===")
-        pertanyaan = [
-            inquirer.List(
-                "menu_akun",
-                message="Pilih menu:",
-                choices=[
-                    "Lihat Data Diri",
-                    "Edit Data Diri",
-                    "Kembali"
-                ]
-            )
-        ]
-        jawaban = inquirer.prompt(pertanyaan)
-        if jawaban is None:
+        jud_utama()
+        jud_sub("MENU AKUN SELLER")
+        pilih = tamp_sell("2.1")
+        if pilih == "1 │ LIHAT DATA DIRI":
+            jud_utama()
+            jud_sub("DATA DIRI SELLER")
+            lihat_data_diri(current_seller)
+            print("")
+            print("═"*70)
+            input("→ 「 Enter untuk kembali 」")
+        elif pilih == "2 │ EDIT DATA DIRI":
+            jud_utama()
+            jud_sub("EDIT DATA DIRI SELLER")
+            edit_data_diri(current_seller)
+            print("")
+            print("═"*70)
+            input("→ 「 Enter untuk kembali 」")
+        elif pilih == "3 │ KEMBALI":
             break
 
-        pilihan = jawaban["menu_akun"]
-
-        if pilihan == "Lihat Data Diri":
-            lihat_data_diri()
-        elif pilihan == "Edit Data Diri":
-            edit_data_diri()
-        elif pilihan == "Kembali":
-            break
-
-
-def lihat_data_diri():
-    clear()
-    print("=== DATA DIRI SELLER ===")
-
+def lihat_data_diri(current_seller):
     table = PrettyTable()
-    table.field_names = ["Field", "Data"]
-
-    table.add_row(["Username", current_seller.get("username", "-")])
-    table.add_row(["Nama", current_seller.get("nama", "-")])
-    table.add_row(["Email", current_seller.get("email", "-")])
-    table.add_row(["No. HP", current_seller.get("no_hp", "-")])
-
-    table.align["Field"] = "l"
-    table.align["Data"] = "l"
-
-    print(table)
-    input("Tekan enter untuk kembali ke Menu Akun...")
-
+    table.field_names = ["    NAMA    ", "         DATA         "]
+    table.add_row(["Username", current_seller.get("us")])
+    table.add_row(["Nama", current_seller.get("pw")])
+    table.add_row(["Email", current_seller.get("email")])
+    table.add_row(["No. HP", current_seller.get("no_hp")])
+    table.add_row(["Alamat", current_seller.get("alamat")])
+    table.align["    NAMA    "] = "l"
+    table.align["         DATA         "] = "l"
+    table_str = table.get_string()
+    for line in table_str.split("\n"):
+        print(line.center(70))
 
 def edit_data_diri():
-    clear()
-    print("=== EDIT DATA DIRI SELLER ===")
     print(Fore.YELLOW + "Biarkan default jika tidak ingin mengubah.\n")
 
     pertanyaan = [
         inquirer.Text(
             "nama",
             message="Nama baru",
-            default=current_seller.get("nama", "")
-        ),
+            default=current_seller.get("nama", "")),
         inquirer.Text(
             "email",
             message="Email baru",
-            default=current_seller.get("email", "")
-        ),
+            default=current_seller.get("email", "")),
         inquirer.Text(
             "no_hp",
             message="No. HP baru",
-            default=current_seller.get("no_hp", "")
-        )
-    ]
+            default=current_seller.get("no_hp", ""))]
 
     jawaban = inquirer.prompt(pertanyaan)
     if jawaban is None:
@@ -178,7 +112,6 @@ def edit_data_diri():
     current_seller["no_hp"] = jawaban["no_hp"] or current_seller["no_hp"]
 
     print(Fore.GREEN + "Data diri berhasil diperbarui!")
-    input("Tekan enter untuk kembali ke Menu Akun...")
 
 # menu penjualan (CRUD produk)
 def menu_penjualan():

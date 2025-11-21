@@ -30,22 +30,20 @@ def menu_boss():
         jud_sub("Selamat Datang Bos!")
         pilih = tamp_bos("1")
         if pilih == "1 │ DAFTAR AKUN":
-            jud_utama()
-            jud_sub("Daftar Akun")
             daftar_akun()
         elif pilih == "2 │ DAFTAR PRODUK":
             jud_utama()
             jud_sub("Daftar Produk")
             daftar_produk()
             print("")
-            print("═"*60)
+            print("═"*70)
             input("→ 「 Enter untuk kembali 」")
         elif pilih == "3 │ LAPORAN PENJUALAN":
             jud_utama()
             jud_sub("Laporan Penjualan")
             laporan()
             print("")
-            print("═"*60)
+            print("═"*70)
             input("→ 「 Enter untuk kembali 」")
         elif pilih == "4 │ LOGOUT":
             pesan_berhasil("Logout Berhasil!")
@@ -71,7 +69,7 @@ def daftar_produk():
         print("Daftar produk belum ada.")
         return
     table = PrettyTable()
-    table.field_names = ["NO", " ID ", "  VARIAN  ", "UKURAN", "HARGA", " STATUS ", "RATE"]
+    table.field_names = ["NO", " ID ", "  VARIAN  ", "UKURAN", "HARGA", " STOK "]
     for idx, p in enumerate(produk_list, start=1):
         table.add_row([
             idx,
@@ -79,8 +77,7 @@ def daftar_produk():
             p["varian"],
             p["kemasan"],
             f"{p['harga']}",
-            p["status"],
-            p["rating"]])
+            p["status"]])
     print(table)
     
 def laporan():
@@ -98,7 +95,7 @@ def menu_akun_seller():
             jud_sub("Daftar Akun Seller")
             daftar_seller()
             print("")
-            print("═"*60)
+            print("═"*70)
             input("→ 「 Enter untuk kembali 」")
         elif pilih == "2 │ BUAT AKUN SELLER":
             jud_utama()
@@ -119,7 +116,7 @@ def menu_akun_konsumen():
             jud_sub("Daftar Akun Konsumen")
             daftar_konsumen()
             print("")
-            print("═"*60)
+            print("═"*70)
             input("→ 「 Enter untuk kembali 」")
         elif pilih == "2 │ UBAH STATUS AKUN KONSUMEN":
             stat_konsumen()
@@ -156,38 +153,53 @@ def regist_seller():
     print("     tidak mengandung karakter spesial!")
     print("   > Password min 8 karakter, mengandung huruf besar & kecil & angka,")
     print("     tidak mengandung karakter spesial!")
+    print("   > Email harus valid dan berakhiran '@gmail.com'")
+    print("   > No. HP harus valid dan berawalan '08'")
     print("")
     username = input("Username: ".center(40))
     password = input("Password: ".center(40))
+    email = input("Email: ".center(40))
+    no_hp = input("No HP: ".center(40))
+    alamat = input("Alamat: ".center(40))
     try:
-        if username == "" or password == "":
+        if username == "" or password == "" or email == "" or no_hp == "" or alamat == "":
             pesan_peringatan("Semua kolom harus diisi!", 12)
+            input("→ 「 Enter untuk kembali 」")
+            return None
+        if not re.search(r"^[a-zA-Z0-9]{5,}$", username):
             raise ValueError
-        elif not re.search(r"^[a-zA-Z0-9]{5,}$", username):
-            pesan_peringatan("Sesuaikan dengan syarat yang tersedia", 12)
+        pola_pw = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$"
+        if not re.search(pola_pw, password):
             raise ValueError
-        else:
-            pola_pw = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$"
-            if not re.search(pola_pw, password):
-                pesan_peringatan("Sesuaikan dengan syarat yang tersedia", 12)
+        if not no_hp.startswith("08"):
+            raise ValueError
+        if not email.endswith("@gmail.com"):
+            raise ValueError
+        for user in akun.values():
+            if user["us"] == username or user["email"] == email:
+                pesan_peringatan("User atau email telah tersedia", 12)
                 raise ValueError
-            else:
-                for nomor, user in akun.items():
-                    if user["us"] == username:
-                        pesan_peringatan("User telah tersedia", 12)
-                        raise ValueError
-                akun.update({
-                    str(len(akun)+1):{
-                        "us": username,
-                        "pw": password,
-                        "role": "Seller",
-                        "status" : "Aktif",
-                        "tgl" : datetime.now().strftime("%Y-%m-%d")}})
-                save_akun_to_csv(akun)
-                pesan_berhasil("Akun seller berhasil dibuat!") 
-                input("→ 「 Enter untuk kembali 」")
-                return True
+        existing_ids = [k for k in akun.keys() if k.startswith("U_S")]
+        last_num = max([int(k.split("_")[1]) for k in existing_ids], default=0)
+        new_id = f"U_S{last_num + 1}"
+        akun.update({
+            new_id: {
+                "id": new_id,
+                "us": username,
+                "pw": password,
+                "role": "Seller",
+                "status": "Aktif",
+                "tgl": datetime.now().strftime("%Y-%m-%d"),
+                "email": email,
+                "no_hp": no_hp,
+                "alamat": alamat,
+                "saldo": 0}})
+        save_akun_to_csv(akun)
+        pesan_berhasil(f"Akun seller berhasil dibuat! ID: {new_id}")
+        input("→ 「 Enter untuk kembali 」")
+        return True
     except ValueError:
+        pesan_peringatan("Pastikan data yang diinput sesuai syarat!", 12)       
         input("→ 「 Enter untuk kembali 」")
         return None
 
@@ -272,7 +284,7 @@ def stat_konsumen():
         no_char = int(no_char)
         konsumen_list = list({nomor: k for nomor, k in akun.items() if k["role"] == "Konsumen"}.keys())
         if not (1 <= no_char <= len(konsumen_list)):
-            pesan_peringatan("Nomor akun seller tidak ditemukan!", 15)
+            pesan_peringatan("Nomor akun konsumen tidak ditemukan!", 15)
             continue
         akun_id = konsumen_list[no_char - 1]
         questions = [

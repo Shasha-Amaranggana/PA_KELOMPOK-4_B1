@@ -1,4 +1,4 @@
-id,us,pw,role,status,tgl
-U_B1,1,1,Bos,Aktif,2025-10-10
-U_S1,2,2,Seller,Aktif,2025-10-10
-U_K1,3,3,Konsumen,Aktif,2025-10-10
+id,us,pw,role,status,tgl,email,no_hp,alamat,saldo
+U_B1,1,1,Bos,Aktif,2025-10-10,Shaasha04@gmail.com,081348861965,Jalan Durian,0
+U_K1,3,3,Konsumen,Aktif,2025-10-10,Owenn00@gmail.com,080987654321,Jalan Mangga,0
+U_S1,2,2,Seller,Aktif,2025-10-10,Kanja34@gmail.com,081234567890,Jalan Anggur,0
