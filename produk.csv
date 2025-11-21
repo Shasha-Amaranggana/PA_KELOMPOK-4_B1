@@ -1,4 +1,10 @@
-id,varian,kemasan,harga,status,rating
-1,Blueberry,Large,18000,Tersedia,5
-2,Blueberry,Medium,15000,Tersedia,4
-3,Blueberry,Small,10000,Tersedia,4
+id,varian,kemasan,harga,stok
+C1,Caramel,Small,5000,15
+C2,Caramel,Medium,8000,25
+C3,Caramel,Large,15000,0
+B1,Blueberry,Small,5000,30
+B2,Blueberry,Medium,8000,20
+B3,Blueberry,Large,15000,35
+M1,Matcha,Small,5000,40
+M2,Matcha,Medium,8000,45
+M3,Matcha,Large,15000,10
