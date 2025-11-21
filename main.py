@@ -1,7 +1,8 @@
 import inquirer
 import re
+from datetime import datetime
 from menu_bos import menu_boss
-from data import akun
+from data import akun, save_akun_to_csv
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan
 from menu_seller import menu_seller
 from menu_konsumen import menu_konsumen
@@ -24,11 +25,11 @@ def login():
                     raise ValueError
                 pesan_berhasil(f"Login berhasil! Selamat datang, {username}!")
                 input("→ 「 Enter untuk lanjut 」")
-                if user["role"] == "bos":
+                if user["role"] == "Bos":
                     menu_boss()
-                elif user["role"] == "seller":
+                elif user["role"] == "Seller":
                     menu_seller()
-                elif user["role"] == "konsumen":
+                elif user["role"] == "Konsumen":
                     menu_konsumen(username)
                 input("→ 「 Enter untuk kembali 」")
                 return
@@ -53,7 +54,7 @@ def register():
         if username == "" or password == "":
             pesan_peringatan("Semua kolom harus diisi!", 12)
             raise ValueError
-        elif not re.search(r"^[a-zA-Z0-9]{4,}$", username):
+        elif not re.search(r"^[a-zA-Z0-9]{5,}$", username):
             pesan_peringatan("Sesuaikan dengan syarat yang tersedia", 12)
             raise ValueError
         else:
@@ -70,9 +71,10 @@ def register():
                     str(len(akun)+1): {
                         "us": username,
                         "pw": password,
-                        "role": "konsumen",
+                        "role": "Konsumen",
                         "status" : "Aktif",
-                        "tgl" : ""}})
+                        "tgl" : datetime.now().strftime("%Y-%m-%d")}})
+                save_akun_to_csv(akun)
                 pesan_berhasil("Registrasi berhasil! Silakan login.") 
                 input("→ 「 Enter untuk kembali 」")
                 return True
@@ -88,17 +90,17 @@ while True:
             "menu",
             message="Pilih menu:",
             choices=[
-                "1. Login",
-                "2. Register",
-                "3. Keluar"])]
+                "1 | LOGIN",
+                "2 | REGISTER",
+                "3 | KELUAR"])]
     answer = inquirer.prompt(questions)["menu"]
 
-    if answer == "1. Login":
-        print("Kamu memilih Login.\n")
+    if answer == "1 | LOGIN":
         login()
-    elif answer == "2. Register":
-        print("Kamu memilih Register.\n")
+    elif answer == "2 | REGISTER":
         register()
-    elif answer == "3. Keluar":
-        print("Program selesai. Terima kasih!")
+    elif answer == "3 | KELUAR":
+        jud_utama()
+        jud_sub("Terima kasih telah menggunakam program kami!")
+        print("(Trauma buat nih program, help)".center(60))
         break

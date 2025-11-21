@@ -5,9 +5,9 @@ import os
 # AKUN
 # -----------------------------
 _default_akun = {
-    "1": {"us": "1", "pw": "1", "role": "bos", "status": "Aktif", "tgl": ""},
-    "2": {"us": "2", "pw": "2", "role": "seller", "status": "Aktif", "tgl": ""},
-    "3": {"us": "3", "pw": "3", "role": "konsumen", "status": "Aktif", "tgl": ""},
+    "1": {"us": "1", "pw": "1", "role": "Bos", "status": "Aktif", "tgl": ""},
+    "2": {"us": "2", "pw": "2", "role": "Seller", "status": "Aktif", "tgl": ""},
+    "3": {"us": "3", "pw": "3", "role": "Konsumen", "status": "Aktif", "tgl": ""},
 }
 
 CSV_AKUN_FILE = "user.csv"
@@ -101,7 +101,3 @@ try:
     produk_list = load_produk_from_csv()
 except Exception:
     produk_list = list(_default_produk)
-
-# -----------------------------
-# Fungsi daftar produk
-# -----------------------------

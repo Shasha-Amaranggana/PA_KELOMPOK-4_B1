@@ -1,4 +1,6 @@
 id,us,pw,role,status,tgl
-1,1,1,bos,Aktif,
-2,2,2,seller,Aktif,
-3,3,3,konsumen,Aktif,
+1,1,1,Bos,Aktif,
+2,2,2,Seller,Nonaktif,
+3,3,3,Konsumen,Nonaktif,
+4,Shasha34,Shasha34,Seller,Aktif,2025-11-21
+5,Shasha45,Shasha45,Seller,Aktif,2025-11-21

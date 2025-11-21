@@ -1,7 +1,26 @@
 import inquirer
 import re
-from data import akun, produk_list
-from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan
+from prettytable import PrettyTable
+from datetime import datetime
+from data import akun, produk_list, save_akun_to_csv
+from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_no
+
+def tamp_bos(jenis):
+    message = "Silakan pilih menu"
+    daftar_menu = {
+        "1": ['1 │ DAFTAR AKUN'.center(30), '2 │ DAFTAR PRODUK'.center(32), '3 │ LAPORAN PENJUALAN'.center(35),  '4 │ LOGOUT'.center(23)],
+        "2.1" : ['1 │ MENU AKUN SELLER'.center(33), '2 │ MENU AKUN KONSUMEN'.center(35), '3 │ KEMBALI'.center(25)],
+        "3.1" : ['1 │ DAFTAR AKUN SELLER'.center(35), '2 │ BUAT AKUN SELLER'.center(33), '3 │ UBAH STATUS AKUN SELLER'.center(41), '4 │ KEMBALI'.center(25)],
+        "3.2" : ['1 │ DAFTAR AKUN KONSUMEN'.center(37), '2 │ UBAH STATUS AKUN KONSUMEN'.center(43), '3 │ KEMBALI'.center(25)],
+        "4.1" : ['1 │ Aktifkan Akun'.center(32), '2 │ Nonaktifkan Akun'.center(35), '3 │ Hapus Akun'.center(29)]}
+    choices = daftar_menu[jenis] 
+    answer = inquirer.prompt([
+        inquirer.List(
+            'menu',
+            message = message,
+            choices = choices)])
+    pilihan = answer['menu'].strip()
+    return pilihan 
 
 # FUNGSI BOS 1
 # ════════════════════════════════════════════════════
@@ -9,35 +28,26 @@ def menu_boss():
     while True:
         jud_utama()
         jud_sub("Selamat Datang Bos!")
-        questions = [
-            inquirer.List(
-                "menu",
-                message="Pilih menu:",
-                choices=[
-                    "1. Daftar Akun",
-                    "2. Daftar Produk",
-                    "3. Laporan Penjualan",
-                    "4. Logout"])]
-        answer = inquirer.prompt(questions)["menu"]
-        if answer == "1. Daftar Akun":
+        pilih = tamp_bos("1")
+        if pilih == "1 │ DAFTAR AKUN":
             jud_utama()
             jud_sub("Daftar Akun")
             daftar_akun()
-        elif answer == "2. Daftar Produk":
+        elif pilih == "2 │ DAFTAR PRODUK":
             jud_utama()
             jud_sub("Daftar Produk")
             daftar_produk()
             print("")
             print("═"*60)
             input("→ 「 Enter untuk kembali 」")
-        elif answer == "3. Laporan Penjualan":
+        elif pilih == "3 │ LAPORAN PENJUALAN":
             jud_utama()
             jud_sub("Laporan Penjualan")
             laporan()
             print("")
             print("═"*60)
             input("→ 「 Enter untuk kembali 」")
-        elif answer == "4. Logout":
+        elif pilih == "4 │ LOGOUT":
             pesan_berhasil("Logout Berhasil!")
             break
 
@@ -47,20 +57,12 @@ def daftar_akun():
     while True:
         jud_utama()
         jud_sub("Daftar Akun")
-        questions = [
-            inquirer.List(
-                "menu",
-                message="Pilih menu:",
-                choices=[
-                    "1. Menu Akun Seller",
-                    "2. Menu Akun Konsumen",
-                    "3. Kembali"])]
-        answer = inquirer.prompt(questions)["menu"]
-        if answer == "1. Menu Akun Seller":
+        pilih = tamp_bos("2.1")
+        if pilih  == "1 │ MENU AKUN SELLER":
             menu_akun_seller()
-        elif answer == "2. Menu Akun Konsumen":
+        elif pilih == "2 │ MENU AKUN KONSUMEN":
             menu_akun_konsumen()
-        elif answer == "3. Kembali":
+        elif pilih == "3 │ KEMBALI":
             break
 
 def daftar_produk():
@@ -68,11 +70,18 @@ def daftar_produk():
     if len(produk_list) == 0:
         print("Daftar produk belum ada.")
         return
-    print("NO  ID   VARIAN       KEMASAN     HARGA      STATUS")
-    print("──" * 30)
+    table = PrettyTable()
+    table.field_names = ["NO", " ID ", "    VARIAN    ", "UKURAN", " HARGA ", " STATUS "]
     for idx, p in enumerate(produk_list, start=1):
-        print(f"{idx:<3} {p['id']:<4} {p['varian']:<12} {p['kemasan']:<10} {p['harga']:<10} {p['status']}")
-
+        table.add_row([
+            idx,
+            p["id"],
+            p["varian"],
+            p["kemasan"],
+            f"{p['harga']}",
+            p["status"]])
+    print(table)
+    
 def laporan():
     print("belum kepikiran")
 
@@ -82,55 +91,38 @@ def menu_akun_seller():
     while True:
         jud_utama()
         jud_sub("Menu Akun Seller")
-        questions = [
-            inquirer.List(
-                "menu",
-                message="Pilih menu:",
-                choices=[
-                    "1. Daftar Akun Seller",
-                    "2. Buat Akun Seller",
-                    "3. Ubah Status Akun Seller",
-                    "4. Kembali"])]
-        answer = inquirer.prompt(questions)["menu"]
-        if answer == "1. Daftar Akun Seller":
+        pilih = tamp_bos("3.1")
+        if pilih == "1 │ DAFTAR AKUN SELLER":
             jud_utama()
-            jud_sub("Daftar Produk")
+            jud_sub("Daftar Akun Seller")
             daftar_seller()
             print("")
             print("═"*60)
             input("→ 「 Enter untuk kembali 」")
-        elif answer == "2. Buat Akun Seller":
+        elif pilih == "2 │ BUAT AKUN SELLER":
             jud_utama()
-            jud_sub("Daftar Produk")
+            jud_sub("Buat Akun Seller")
             regist_seller()
-        elif answer == "3. Ubah Status Akun Seller":
+        elif pilih == "3 │ UBAH STATUS AKUN SELLER":
             stat_seller()
-        elif answer == "4. Kembali":
+        elif pilih == "4 │ KEMBALI":
             break
 
 def menu_akun_konsumen():
     while True:
         jud_utama()
         jud_sub("Menu Akun Konsumen")
-        questions = [
-            inquirer.List(
-                "menu",
-                message="Pilih menu:",
-                choices=[
-                    "1. Daftar Akun Konsumen",
-                    "2. Ubah Status Akun Konsumen",
-                    "3. Kembali"])]
-        answer = inquirer.prompt(questions)["menu"]
-        if answer == "1. Daftar Akun Konsumen":
+        pilih = tamp_bos("3.2")
+        if pilih == "1 │ DAFTAR AKUN KONSUMEN":
             jud_utama()
-            jud_sub("Daftar Produk")
+            jud_sub("Daftar Akun Konsumen")
             daftar_konsumen()
             print("")
             print("═"*60)
             input("→ 「 Enter untuk kembali 」")
-        elif answer == "2. Ubah Status Akun Konsumen":
+        elif pilih == "2 │ UBAH STATUS AKUN KONSUMEN":
             stat_konsumen()
-        elif answer == "3. Kembali":
+        elif pilih == "3 │ KEMBALI":
             break
 
 # FUNGSI BOS 4
@@ -138,23 +130,23 @@ def menu_akun_konsumen():
 def daftar_seller():
     global akun
     seller_list = {}
-    for nomor, k in akun.items():
-        if k["role"] == "seller":
-            seller_list[nomor] = k
+    for id_key, data in akun.items():
+        if data["role"] == "Seller":
+            seller_list[id_key] = data
     if len(seller_list) == 0:
         pesan_berhasil("Daftar akun seller belum ada.")
-    else:
-        print("ID     USERNAME       ROLE     STATUS      TERDAFTAR PADA TANGGAL")
-        print("──" * 30)
-        no = 1
-        for nomor, k in seller_list.items():
-            print(
-                no, "| ",
-                k["us"], " " * (14 - len(k["us"])),
-                k["role"], " " * (9 - len(k["role"])),
-                k["status"], " " * (11 - len(k["status"])),
-                k["tgl"])
-            no += 1
+        return
+    table = PrettyTable()
+    table.field_names = ["NO", " ID ", "  USERNAME  ", " ROLE ", " STATUS ", "TERDAFTAR"]
+    for idx, (id_key, user) in enumerate(seller_list.items(), start=1):
+        table.add_row([
+            idx,
+            id_key,
+            user["us"],
+            user["role"],
+            user["status"],
+            user["tgl"]])
+    print(table)
 
 def regist_seller():
     jud_utama()
@@ -170,7 +162,7 @@ def regist_seller():
         if username == "" or password == "":
             pesan_peringatan("Semua kolom harus diisi!", 12)
             raise ValueError
-        elif not re.search(r"^[a-zA-Z0-9]{4,}$", username):
+        elif not re.search(r"^[a-zA-Z0-9]{5,}$", username):
             pesan_peringatan("Sesuaikan dengan syarat yang tersedia", 12)
             raise ValueError
         else:
@@ -184,12 +176,13 @@ def regist_seller():
                         pesan_peringatan("User telah tersedia", 12)
                         raise ValueError
                 akun.update({
-                    str(len(akun)+1): {
+                    str(len(akun)+1):{
                         "us": username,
                         "pw": password,
-                        "role": "seller",
+                        "role": "Seller",
                         "status" : "Aktif",
-                        "tgl" : ""}})
+                        "tgl" : datetime.now().strftime("%Y-%m-%d")}})
+                save_akun_to_csv(akun)
                 pesan_berhasil("Akun seller berhasil dibuat!") 
                 input("→ 「 Enter untuk kembali 」")
                 return True
@@ -203,60 +196,65 @@ def stat_seller():
         jud_sub("Status Seller")
         daftar_seller()
         global akun
-        print("\nKetik 'kembali' untuk keluar.")
-        no_char = input("Pilih nomor akun seller: ").strip()
+        no_char = inp_no()
         if no_char == "kembali":
             return None
         if not no_char.isdigit():
             pesan_peringatan("Input harus berupa angka!", 15)
             continue
         no_char = int(no_char)
-        daftar_seller_ids = list({nomor: k for nomor, k in akun.items() if k["role"] == "seller"}.keys())
-        if not (1 <= no_char <= len(daftar_seller_ids)):
+        seller_list = list({nomor: k for nomor, k in akun.items() if k["role"] == "Seller"}.keys())
+        if not (1 <= no_char <= len(seller_list)):
             pesan_peringatan("Nomor akun seller tidak ditemukan!", 15)
             continue
-        akun_id = daftar_seller_ids[no_char - 1]
-        data_seller = akun[akun_id]
-        print("\nPKonfirmasi status akun:")
-        print("1. Aktifkan akun")
-        print("2. Nonaktifkan akun")
-        print("3. Hapus akun")
-        tindakan = input("Masukkan pilihan: ").strip()
-        if tindakan == "1":
+        akun_id = seller_list[no_char - 1]
+        questions = [
+            inquirer.List(
+                "menu",
+                message="Pilih tindakan:",
+                choices=[
+                    "1 | Aktifkan Akun",
+                    "2 | Nonaktifkan Akun",
+                    "3 | Hapus Akun"])]
+        pilih = inquirer.prompt(questions)["menu"]
+        if pilih == "1 | Aktifkan Akun":
             akun[akun_id]["status"] = "Aktif"
+            save_akun_to_csv(akun)
             pesan_berhasil("Akun berhasil diaktifkan!")
-        elif tindakan == "2":
+            input("→ 「 Enter untuk kembali 」")
+        elif pilih == "2 | Nonaktifkan Akun":
             akun[akun_id]["status"] = "Nonaktif"
+            save_akun_to_csv(akun)
             pesan_berhasil("Akun berhasil dinonaktifkan!")
-        elif tindakan == "3":
+            input("→ 「 Enter untuk kembali 」")
+        elif pilih == "3 | Hapus Akun":
             del akun[akun_id]
+            save_akun_to_csv(akun)
             pesan_berhasil("Akun berhasil dihapus!")
-        else:
-            pesan_peringatan("Pilihan tindakan tidak valid!", 15)
-            continue
+            input("→ 「 Enter untuk kembali 」")
 
 def daftar_konsumen():
     jud_utama()
     jud_sub("Daftar Konsumen")
     global akun
     konsumen_list = {}
-    for nomor, k in akun.items():
-        if k["role"] == "konsumen":
-            konsumen_list[nomor] = k
+    for id_key, data in akun.items():
+        if data["role"] == "Konsumen":
+            konsumen_list[id_key] = data
     if len(konsumen_list) == 0:
         pesan_berhasil("Daftar akun konsumen belum ada.")
-    else:
-        print("ID     USERNAME       ROLE     STATUS      TERDAFTAR PADA TANGGAL")
-        print("──" * 30)
-        no = 1
-        for nomor, k in konsumen_list.items():
-            print(
-                no, "| ",
-                k["us"], " " * (14 - len(k["us"])),
-                k["role"], " " * (9 - len(k["role"])),
-                k["status"], " " * (11 - len(k["status"])),
-                k["tgl"])
-            no += 1
+        return
+    table = PrettyTable()
+    table.field_names = ["NO", " ID ", "  USERNAME  ", " ROLE ", " STATUS ", "TERDAFTAR"]
+    for idx, (id_key, user) in enumerate(konsumen_list.items(), start=1):
+        table.add_row([
+            idx,
+            id_key,
+            user["us"],
+            user["role"],
+            user["status"],
+            user["tgl"]])
+    print(table)
 
 def stat_konsumen():
     while True:
@@ -264,34 +262,39 @@ def stat_konsumen():
         jud_sub("Status Konsumen")
         daftar_konsumen()
         global akun
-        print("\nKetik 'kembali' untuk keluar.")
-        no_char = input("Pilih nomor akun seller: ").strip()
+        no_char = inp_no()
         if no_char == "kembali":
             return None
         if not no_char.isdigit():
             pesan_peringatan("Input harus berupa angka!", 15)
             continue
         no_char = int(no_char)
-        daftar_konsumen_ids = list({nomor: k for nomor, k in akun.items() if k["role"] == "konsumen"}.keys())
-        if not (1 <= no_char <= len(daftar_konsumen_ids)):
+        konsumen_list = list({nomor: k for nomor, k in akun.items() if k["role"] == "Konsumen"}.keys())
+        if not (1 <= no_char <= len(konsumen_list)):
             pesan_peringatan("Nomor akun seller tidak ditemukan!", 15)
             continue
-        akun_id = daftar_konsumen_ids[no_char - 1]
-        data_konsumen = akun[akun_id]
-        print("\nPKonfirmasi status akun:")
-        print("1. Aktifkan akun")
-        print("2. Nonaktifkan akun")
-        print("3. Hapus akun")
-        tindakan = input("Masukkan pilihan: ").strip()
-        if tindakan == "1":
+        akun_id = konsumen_list[no_char - 1]
+        questions = [
+            inquirer.List(
+                "menu",
+                message="Pilih tindakan:",
+                choices=[
+                    "1 | Aktifkan Akun",
+                    "2 | Nonaktifkan Akun",
+                    "3 | Hapus Akun"])]
+        pilih = inquirer.prompt(questions)["menu"]
+        if pilih == "1 | Aktifkan Akun":
             akun[akun_id]["status"] = "Aktif"
+            save_akun_to_csv(akun)
             pesan_berhasil("Akun berhasil diaktifkan!")
-        elif tindakan == "2":
+            input("→ 「 Enter untuk kembali 」")
+        elif pilih == "2 | Nonaktifkan Akun":
             akun[akun_id]["status"] = "Nonaktif"
+            save_akun_to_csv(akun)
             pesan_berhasil("Akun berhasil dinonaktifkan!")
-        elif tindakan == "3":
+            input("→ 「 Enter untuk kembali 」")
+        elif pilih == "3 | Hapus Akun":
             del akun[akun_id]
+            save_akun_to_csv(akun)
             pesan_berhasil("Akun berhasil dihapus!")
-        else:
-            pesan_peringatan("Pilihan tindakan tidak valid!", 15)
-            continue
+            input("→ 「 Enter untuk kembali 」")
