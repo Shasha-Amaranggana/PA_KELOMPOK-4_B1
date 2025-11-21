@@ -1,4 +1,4 @@
-id,varian,kemasan,harga,stok
+ID,VARIAN,KEMASAN,HARGA,STOK
 C1,Caramel,Small,5000,15
 C2,Caramel,Medium,8000,25
 C3,Caramel,Large,15000,0
