@@ -1,4 +1,4 @@
-id,varian,kemasan,harga,status,tgl
-1,Blueberry,Large,18000,Tersedia,
-2,Blueberry,Medium,15000,Tersedia,
-3,Blueberry,Small,10000,Tersedia,
+id,varian,kemasan,harga,status,rating
+1,Blueberry,Large,18000,Tersedia,5
+2,Blueberry,Medium,15000,Tersedia,4
+3,Blueberry,Small,10000,Tersedia,4

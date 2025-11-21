@@ -71,7 +71,7 @@ def daftar_produk():
         print("Daftar produk belum ada.")
         return
     table = PrettyTable()
-    table.field_names = ["NO", " ID ", "    VARIAN    ", "UKURAN", " HARGA ", " STATUS "]
+    table.field_names = ["NO", " ID ", "  VARIAN  ", "UKURAN", "HARGA", " STATUS ", "RATE"]
     for idx, p in enumerate(produk_list, start=1):
         table.add_row([
             idx,
@@ -79,7 +79,8 @@ def daftar_produk():
             p["varian"],
             p["kemasan"],
             f"{p['harga']}",
-            p["status"]])
+            p["status"],
+            p["rating"]])
     print(table)
     
 def laporan():

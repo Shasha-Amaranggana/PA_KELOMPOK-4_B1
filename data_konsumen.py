@@ -5,5 +5,3 @@ pesanan = {}
 riwayat = {}
 
 rating = {}
-
-saldo = {}

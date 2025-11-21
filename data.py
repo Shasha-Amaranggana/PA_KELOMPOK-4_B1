@@ -59,12 +59,12 @@ except Exception:
 # PRODUK
 # -----------------------------
 CSV_PRODUK_FILE = "produk.csv"
-CSV_PRODUK_FIELDS = ["id", "varian", "kemasan", "harga", "status", "tgl"]
+CSV_PRODUK_FIELDS = ["id", "varian", "kemasan", "harga", "status", "tgl", "rating"]
 
 _default_produk = [
-    {"id": "1", "varian": "Blueberry", "kemasan": "Large", "harga": 18000, "status": "Tersedia", "tgl": ""},
-    {"id": "2", "varian": "Blueberry", "kemasan": "Medium", "harga": 15000, "status": "Tersedia", "tgl": ""},
-    {"id": "3", "varian": "Blueberry", "kemasan": "Small", "harga": 10000, "status": "Tersedia", "tgl": ""},
+    {"id": "1", "varian": "Blueberry", "kemasan": "Large", "harga": 18000, "status": "Tersedia", "tgl": "", "rating": "5"},
+    {"id": "2", "varian": "Blueberry", "kemasan": "Medium", "harga": 15000, "status": "Tersedia", "tgl": "", "rating": "5"},
+    {"id": "3", "varian": "Blueberry", "kemasan": "Small", "harga": 10000, "status": "Tersedia", "tgl": "", "rating": "5"},
 ]
 
 def save_produk_to_csv(produk_list: list) -> None:
@@ -89,6 +89,7 @@ def load_produk_from_csv() -> list:
                     "harga": int(row.get("harga", 0)),
                     "status": row.get("status", ""),
                     "tgl": row.get("tgl", ""),
+                    "rating": row.get("rating", ""),
                 })
         if produk_list:
             return produk_list
