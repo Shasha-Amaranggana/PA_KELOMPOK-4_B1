@@ -17,9 +17,8 @@ def menu_konsumen(username):
                     "3 | KERANJANG BELANJA",
                     "4 | PESANAN ANDA",
                     "5 | RIWAYAT",
-                    "6 | RATING",
-                    "7 | SALDO",
-                    "8 | LOGOUT"])]
+                    "6 | SALDO",
+                    "7 | LOGOUT"])]
         answer = inquirer.prompt(questions)["menu"]
 
         if answer == "1 | LIHAT AKUN":
@@ -42,14 +41,10 @@ def menu_konsumen(username):
             jud_utama()
             jud_sub("Riwayat Belanja")
             riwayat(username)
-        elif answer == "6 | RATING":
-            jud_utama()
-            jud_sub("Rating Produk")
-            rating(username)
-        elif answer == "7 | SALDO":
+        elif answer == "6 | SALDO":
             jud_utama()
             jud_sub("Saldo")
             saldo(username)
-        elif answer == "8 | LOGOUT":
+        elif answer == "7 | LOGOUT":
             pesan_berhasil("Logout Berhasil!")
             break
