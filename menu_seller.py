@@ -270,6 +270,7 @@ def create_produk():
     }
 
     produk_list.append(produk_baru)
+    save_produk_to_csv()
     print(Fore.GREEN + f"Produk berhasil ditambahkan dengan ID {new_id}")
     input("Tekan enter untuk kembali...")
 
@@ -394,7 +395,7 @@ def update_produk():
             print(Fore.RED + "Harga baru tidak valid, harga lama dipertahankan.")
 
     produk["status"] = jawab_update["status"]
-
+    save_produk_to_csv()
     print(Fore.GREEN + "Data produk berhasil diubah!")
     input("Tekan enter untuk kembali...")
 
@@ -437,6 +438,7 @@ def delete_produk():
     jawab_konfirmasi = inquirer.prompt(konfirmasi)
     if jawab_konfirmasi and jawab_konfirmasi["yakin"]:
         produk_list.remove(produk)
+        save_produk_to_csv()
         print(Fore.GREEN + "Produk berhasil dihapus.")
     else:
         print(Fore.RED + "Produk batal dihapus.")
