@@ -2,7 +2,7 @@ import csv
 import inquirer
 from prettytable import PrettyTable
 from data import akun, produk_list, save_produk_to_csv, save_akun_to_csv
-from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_no
+from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan
 from colorama import Fore, Style, init
 from menu_bos import daftar_produk
 init(autoreset=True)
@@ -315,19 +315,12 @@ def delete_produk():
 # MENU PEMBELIAN
 # ════════════════════════════════════════════════════
 def menu_pembelian():
-    while True:
-        jud_utama()
-        jud_sub("Menu Pembelian")
-        pilihan = tamp_sell("2.3")
-        if pilihan == "1 │ LIHAT RINGKASAN PEMBELIAN":
-            jud_utama()
-            jud_sub("Ringkasan Pembelian")
-            lihat_ringkasan_pembelian()
-            print("")
-            print("═"*70)
-            input("→ 「 Enter untuk kembali 」")
-        elif pilihan == "2 │ KEMBALI":
-            break
+    jud_utama()
+    jud_sub("Ringkasan Pembelian")
+    lihat_ringkasan_pembelian()
+    print("")
+    print("="*70)
+    input("→ [ Enter untuk kembali ke Menu Seller ] ")
 
 def lihat_ringkasan_pembelian():
     global pesanan_list
