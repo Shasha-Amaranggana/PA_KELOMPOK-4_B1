@@ -340,6 +340,7 @@ def lihat_ringkasan_pembelian():
         for idx, p in enumerate(pesanan_list, start=1):
             table.add_row([
                 idx,
+                p["id_user"],
                 p["id_pesanan"],
                 p["nama_user"],
                 f"Rp{p['total_harga']}",
