@@ -1,5 +1,7 @@
 import os
 import inquirer
+from colorama import Fore, Style, init
+init(autoreset=True)
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -11,9 +13,9 @@ def jud_utama():
     print("═"*70)
 
 def jud_sub(judul):
-    print(("═"*40).center(70))
+    print(("═"*50).center(70))
     print(judul.center(70))
-    print(("═"*40).center(70))
+    print(("═"*50).center(70))
     print("")
 
 def inp_menu():
@@ -31,15 +33,16 @@ def inp_no():
 
 def pesan_berhasil(pesan):
     print("")
-    print(("═"*20).center(70))
-    print(pesan.center(70))
-    print(("═"*20).center(70))
+    print(Style.RESET_ALL + Fore.GREEN + ("═" * 20).center(70))
+    print(Fore.GREEN + Style.BRIGHT + pesan.center(70))
+    print(Fore.GREEN + ("═" * 20).center(70) + Style.RESET_ALL)
     print("")
 
-def pesan_peringatan(pesan, jumlah):
+def pesan_peringatan(pesan, warna, jumlah):
     print("")
-    print("──" * jumlah)
-    print(pesan)
-    print("──" * jumlah)
+    print(Style.RESET_ALL + Fore.YELLOW + ("──" * jumlah).center(70))
+    print(warna + Style.BRIGHT + pesan.center(70))
+    print(warna + ("──" * jumlah).center(70) + Style.RESET_ALL)
     print("")
+
 

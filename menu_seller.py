@@ -1,11 +1,10 @@
 import csv
-import os
 import inquirer
 from prettytable import PrettyTable
-from colorama import Fore, Style
-from colorama import Fore, Style, init
-from data import akun, produk_list, save_produk_to_csv
+from data import akun, produk_list, save_produk_to_csv, save_akun_to_csv
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_no
+from colorama import Fore, Style, init
+from menu_bos import daftar_produk
 init(autoreset=True)
 
 pesanan_list = []
@@ -15,10 +14,10 @@ def tamp_sell(jenis):
     daftar_menu = {
         "1": ['1 │ AKUN'.center(31), '2 │ PENJUALAN'.center(37), '3 │ PEMBELIAN'.center(37),  '4 │ PEMESANAN'.center(37), '5 │ STATUS PEMESANAN'.center(43), '6 │ LOGOUT'.center(33)],
         "2.1" : ['1 │ LIHAT DATA DIRI'.center(43), '2 │ EDIT DATA DIRI'.center(42), '3 │ KEMBALI'.center(35)],
-        "2.2" : ['1 │ TAMBAH PRODUK'.center(41), '2 │ LIHAT PRODUK'.center(33), '3 │ EDIT PRODUK'.center(41), '4 │ HAPUS PRODUK'.center(25), '5 │ KEMBALI'.center(35)],
-        "2.3" : ['1 │ LIHAT RINGKASAN PEMBELIAN'.center(37), '2 │ KEMBALI'.center(35)],
-        "2.4" : ['1 │ LIHAT PEMESANAN'.center(33), '2 │ HAPUS PEMESANAN'.center(35), '3 │ KEMBALI'.center(35)],
-        "2.5" : ['1 │ BUAT STATUS AWAL PESANAN'.center(33), '2 │ LIHAT STATUS PESANAN'.center(35), '3 │ KEMBALI'.center(35)]}
+        "2.2" : ['1 │ TAMBAH PRODUK'.center(41), '2 │ LIHAT PRODUK'.center(40), '3 │ EDIT PRODUK'.center(39), '4 │ HAPUS PRODUK'.center(40), '5 │ KEMBALI'.center(35)],
+        "2.3" : ['1 │ LIHAT RINGKASAN PEMBELIAN'.center(53), '2 │ KEMBALI'.center(35)],
+        "2.4" : ['1 │ LIHAT PEMESANAN'.center(43), '2 │ HAPUS PEMESANAN'.center(43), '3 │ KEMBALI'.center(35)],
+        "2.5" : ['1 │ BUAT STATUS AWAL PESANAN'.center(52), '2 │ LIHAT STATUS PESANAN'.center(47), '3 │ KEMBALI'.center(35)]}
     choices = daftar_menu[jenis]
     answer = inquirer.prompt([
         inquirer.List(
@@ -53,18 +52,18 @@ def menu_seller(current_seller):
 def menu_akun(current_seller):
     while True:
         jud_utama()
-        jud_sub("MENU AKUN SELLER")
+        jud_sub("Menu Akun Seller")
         pilih = tamp_sell("2.1")
         if pilih == "1 │ LIHAT DATA DIRI":
             jud_utama()
-            jud_sub("DATA DIRI SELLER")
+            jud_sub("Data Diri Seller")
             lihat_data_diri(current_seller)
             print("")
             print("═"*70)
             input("→ 「 Enter untuk kembali 」")
         elif pilih == "2 │ EDIT DATA DIRI":
             jud_utama()
-            jud_sub("EDIT DATA DIRI SELLER")
+            jud_sub("Edit Data Diri Seller")
             edit_data_diri(current_seller)
             print("")
             print("═"*70)
@@ -76,7 +75,7 @@ def lihat_data_diri(current_seller):
     table = PrettyTable()
     table.field_names = ["    NAMA    ", "         DATA         "]
     table.add_row(["Username", current_seller.get("us")])
-    table.add_row(["Nama", current_seller.get("pw")])
+    table.add_row(["Password", current_seller.get("pw")])
     table.add_row(["Email", current_seller.get("email")])
     table.add_row(["No. HP", current_seller.get("no_hp")])
     table.add_row(["Alamat", current_seller.get("alamat")])
@@ -86,105 +85,97 @@ def lihat_data_diri(current_seller):
     for line in table_str.split("\n"):
         print(line.center(70))
 
-def edit_data_diri():
-    print(Fore.YELLOW + "Biarkan default jika tidak ingin mengubah.\n")
-
+def edit_data_diri(current_seller):
+    print(Fore.BLUE + "  > Lewati jika tidak ingin mengubah data.\n" + Style.RESET_ALL)
     pertanyaan = [
         inquirer.Text(
             "nama",
-            message="Nama baru",
-            default=current_seller.get("nama", "")),
+            message = "Username baru",
+            default = current_seller.get("us", "")),
+        inquirer.Text(
+            "password",
+            message = "Password baru",
+            default = current_seller.get("pw", "")),
         inquirer.Text(
             "email",
-            message="Email baru",
-            default=current_seller.get("email", "")),
+            message = "Email baru",
+            default = current_seller.get("email", "")),
         inquirer.Text(
             "no_hp",
-            message="No. HP baru",
-            default=current_seller.get("no_hp", ""))]
-
+            message = "No. HP baru",
+            default=current_seller.get("no_hp", "")),
+        inquirer.Text(
+            "alamat",
+            message = "Alamat baru",
+            default=current_seller.get("alamat", ""))]
     jawaban = inquirer.prompt(pertanyaan)
     if jawaban is None:
         return
-
-    current_seller["nama"] = jawaban["nama"] or current_seller["nama"]
+    current_seller["us"] = jawaban["nama"] or current_seller["us"]
+    current_seller["pw"] = jawaban["password"] or current_seller["pw"]
     current_seller["email"] = jawaban["email"] or current_seller["email"]
     current_seller["no_hp"] = jawaban["no_hp"] or current_seller["no_hp"]
+    current_seller["alamat"] = jawaban["alamat"] or current_seller["alamat"]
+    if "id" in current_seller:
+        akun[current_seller["id"]] = current_seller
+        save_akun_to_csv(akun)
+    pesan_berhasil("Data akun berhasil diubah!")
 
-    print(Fore.GREEN + "Data diri berhasil diperbarui!")
-
-# menu penjualan (CRUD produk)
+# MENU PENJUALAN (CRUD PRODUK)
+# ════════════════════════════════════════════════════
 def menu_penjualan():
     while True:
-        clear()
-        print("=== MENU PENJUALAN (PRODUK POPCORN) ===")
-        pertanyaan = [
-            inquirer.List(
-                "menu_penjualan",
-                message="Pilih menu:",
-                choices=[
-                    "Tambah Produk",
-                    "Lihat Produk",
-                    "Edit Produk",
-                    "Hapus Produk",
-                    "Kembali"
-                ]
-            )
-        ]
-        jawaban = inquirer.prompt(pertanyaan)
-        if jawaban is None:
-            break
-
-        pilihan = jawaban["menu_penjualan"]
-
-        if pilihan == "Tambah Produk":
+        jud_utama()
+        jud_sub("Menu Penjualan (Produk Popcorn)")
+        pilihan = tamp_sell("2.2")
+        if pilihan == "1 │ TAMBAH PRODUK":
+            jud_utama()
+            jud_sub("Tambah Produk Popcorn")
             create_produk()
-        elif pilihan == "Lihat Produk":
-            tampilkan_daftar_produk()
-        elif pilihan == "Edit Produk":
+        elif pilihan == "2 │ LIHAT PRODUK":
+            jud_utama()
+            jud_sub("Daftar Produk")
+            daftar_produk()
+            print("")
+            print("═"*70)
+            input("→ 「 Enter untuk kembali 」")
+        elif pilihan == "3 │ EDIT PRODUK":
+            jud_utama()
+            jud_sub("Edit Produk")
             update_produk()
-        elif pilihan == "Hapus Produk":
+        elif pilihan == "4 │ HAPUS PRODUK":
+            jud_utama()
+            jud_sub("Hapus Produk")
             delete_produk()
-        elif pilihan == "Kembali":
+        elif pilihan == "5 │ KEMBALI":
             break
-
 
 def create_produk():
-    clear()
-    print("=== TAMBAH PRODUK POPCORN ===")
-
     pertanyaan = [
         inquirer.Text("varian", message="Masukkan varian rasa baru"),
         inquirer.Text("kemasan", message="Masukkan ukuran kemasan (Small/Medium/Large)"),
         inquirer.Text("harga", message="Masukkan harga sesuai kemasan"),
-        inquirer.List(
-            "status",
-            message="Status ketersediaan produk",
-            choices=["Tersedia", "Habis"]
-        )
-    ]
+        inquirer.Text("stok", message="Masukkan jumlah stok")]
     jawaban = inquirer.prompt(pertanyaan)
-
     if jawaban is None:
         return
-
+    
     try:
         harga = int(jawaban["harga"])
+        stok = int(jawaban["stok"])
     except ValueError:
-        print(Fore.RED + "Harga harus berupa angka! Tekan enter untuk kembali...")
-        input()
+        pesan_peringatan("Harga dan stok harus berupa angka!", Fore.YELLOW, 12)       
+        input("→ 「 Enter untuk kembali 」")
         return
 
-    # buat id otomatis yang baru 
     varian = jawaban["varian"].strip()
     if varian == "":
-        print(Fore.RED + "Varian tidak boleh kosong.")
-        input("Tekan enter untuk kembali...")
+        pesan_peringatan("Varian tidak boleh kosong!", Fore.YELLOW, 12)       
+        input("→ 「 Enter untuk kembali 」")
         return
 
     kode = varian[0].upper()
     existing_ids = [p["id"] for p in produk_list if p["id"].startswith(kode)]
-    # pakai max num agar tidak ada id duplikat
     max_num = 0
     for pid in existing_ids:
         tail = pid[1:]
@@ -199,183 +190,128 @@ def create_produk():
         "varian": varian,
         "kemasan": jawaban["kemasan"],
         "harga": harga,
-        "status": jawaban["status"]
-    }
+        "stok": jawaban["stok"]}
 
     produk_list.append(produk_baru)
-    save_produk_to_csv()
-    print(Fore.GREEN + f"Produk berhasil ditambahkan dengan ID {new_id}")
-    input("Tekan enter untuk kembali...")
-
-
-def tampilkan_daftar_produk():
-    clear()
-    if not produk_list:
-        print(Fore.YELLOW + "Belum ada produk yang ditambahkan.")
-        input("Tekan enter untuk kembali...")
-        return
-
-    table = PrettyTable()
-    table.field_names = ["ID", "Varian", "Kemasan", "Harga", "Status"]
-
-    for p in produk_list:
-        table.add_row([
-            p["id"],
-            p["varian"],
-            p["kemasan"],
-            f"Rp{p['harga']}",
-            p["status"]
-        ])
-
-    table.align["ID"] = "c"
-    table.align["Varian"] = "l"
-    table.align["Kemasan"] = "l"
-    table.align["Harga"] = "r"
-    table.align["Status"] = "c"
-
-    table_str = table.get_string()
-    lines = table_str.split("\n")
-    width = len(lines[0]) if lines else 0
-
-    print("=== DAFTAR PRODUK POPCORN ===".center(width))
-    print(table_str)
-    input("\nTekan enter untuk kembali...")
-
+    save_produk_to_csv(produk_list)
+    pesan_berhasil(f"Produk berhasil ditambahkan dengan ID {new_id}")
+    print("")
+    print("═"*70)
+    input("→ 「 Enter untuk kembali 」")
 
 def update_produk():
-    clear()
-    if not produk_list:
-        print(Fore.YELLOW + "Belum ada produk yang bisa diubah.")
-        input("Tekan enter untuk kembali...")
+    global produk_list
+    if len(produk_list) == 0:
+        print(Fore.YELLOW + "Belum ada produk yang ditambahkan.")
+        input("→ 「 Enter untuk kembali 」")
         return
-
     pilihan_id = [
         inquirer.List(
             "id_produk",
-            message="Pilih produk yang akan diubah:",
-            choices=[f"{p['id']} - {p['varian']} ({p['kemasan']})" for p in produk_list]
-        )
-    ]
+            message="Pilih produk yang akan diubah",
+            choices=[f"{p['id']} │ {p['varian']} ({p['kemasan']})" for p in produk_list])]
     jawaban = inquirer.prompt(pilihan_id)
     if jawaban is None:
         return
-
     teks = jawaban["id_produk"]
-    id_terpilih = teks.split(" - ")[0]
-
+    id_terpilih = teks.split(" │ ")[0].strip()
     produk = next((p for p in produk_list if p["id"] == id_terpilih), None)
 
     if not produk:
-        print(Fore.RED + "Produk tidak ditemukan.")
-        input("Tekan enter untuk kembali...")
+        pesan_peringatan("Produk tidak ditemukan!", Fore.RED, 12)       
+        input("→「 Enter untuk kembali 」")
         return
-
-    clear()
-
+    print(("═"*50).center(70))
     table = PrettyTable()
-    table.field_names = ["Field", "Data"]
+    table.field_names = ["    NAMA    ", "         DATA         "]
     table.add_row(["ID", produk["id"]])
     table.add_row(["Varian", produk["varian"]])
     table.add_row(["Kemasan", produk["kemasan"]])
     table.add_row(["Harga", f"Rp{produk['harga']}"])
-    table.add_row(["Status", produk["status"]])
-    table.align["Field"] = "l"
-    table.align["Data"] = "l"
-
+    table.add_row(["stok", produk["stok"]])
+    table.align["    NAMA    "] = "l"
+    table.align["         DATA         "] = "l"
     table_str = table.get_string()
-    lines = table_str.split("\n")
-    width = len(lines[0]) if lines else 0
-
-    print("=== UBAH DATA PRODUK ===".center(width))
-    print(table_str)
+    for line in table_str.split("\n"):
+        print(line.center(70))
+    print(("═"*50).center(70))
     print()
-
-    pertanyaan_update = [
+    print(Fore.BLUE + "  > Lewati jika tidak ingin mengubah data.\n" + Style.RESET_ALL)
+    pertanyaan = [
         inquirer.Text(
             "varian",
             message="Varian baru",
-            default=produk["varian"]
-        ),
+            default=produk["varian"]),
         inquirer.Text(
             "kemasan",
             message="Kemasan baru",
-            default=produk["kemasan"]
-        ),
+            default=produk["kemasan"]),
         inquirer.Text(
             "harga",
             message="Harga baru",
-            default=str(produk["harga"])
-        ),
-        inquirer.List(
-            "status",
-            message="Status ketersediaan",
-            choices=["Tersedia", "Habis"],
-            default=produk["status"]
-        )
-    ]
+            default=str(produk["harga"])),
+        inquirer.Text(
+            "stok",
+            message="Stok baru",
+            default=str(produk["stok"]))]
 
-    jawab_update = inquirer.prompt(pertanyaan_update)
+    jawab_update = inquirer.prompt(pertanyaan)
     if jawab_update is None:
         return
 
     produk["varian"] = jawab_update["varian"] or produk["varian"]
     produk["kemasan"] = jawab_update["kemasan"] or produk["kemasan"]
-
-    if jawab_update["harga"]:
+    if jawab_update["harga"] or jawab_update["stok"]:
         try:
             produk["harga"] = int(jawab_update["harga"])
+            produk["stok"] = int(jawab_update["stok"]) 
         except ValueError:
-            print(Fore.RED + "Harga baru tidak valid, harga lama dipertahankan.")
-
-    produk["status"] = jawab_update["status"]
-    save_produk_to_csv()
-    print(Fore.GREEN + "Data produk berhasil diubah!")
-    input("Tekan enter untuk kembali...")
-
+            pesan_peringatan("Harga dan stok baru tidak valid! Harga dan stok lama dipertahankan.", Fore.YELLOW, 30)       
+    save_produk_to_csv(produk_list)
+    pesan_berhasil("Data produk berhasil diubah!")
+    print("")
+    print("═"*70)
+    input("→ 「 Enter untuk kembali 」")
 
 def delete_produk():
-    clear()
-    if not produk_list:
-        print(Fore.YELLOW + "Belum ada produk yang bisa dihapus.")
-        input("Tekan enter untuk kembali...")
+    global produk_list
+    if len(produk_list) == 0:
+        print(Fore.YELLOW + "Belum ada produk yang ditambahkan.")
+        input("→ 「 Enter untuk kembali 」")
         return
-
     pilihan_id = [
         inquirer.List(
             "id_produk",
-            message="Pilih produk yang akan dihapus:",
-            choices=[f"{p['id']} - {p['varian']} ({p['kemasan']})" for p in produk_list]
-        )
-    ]
+            message="Pilih produk yang akan dihapus",
+            choices=[f"{p['id']} │ {p['varian']} ({p['kemasan']})" for p in produk_list])]
     jawaban = inquirer.prompt(pilihan_id)
     if jawaban is None:
         return
-
     teks = jawaban["id_produk"]
-    id_terpilih = teks.split(" - ")[0]
-
+    id_terpilih = teks.split(" │ ")[0].strip()
     produk = next((p for p in produk_list if p["id"] == id_terpilih), None)
 
     if not produk:
-        print(Fore.RED + "Produk tidak ditemukan.")
-        input("Tekan enter untuk kembali...")
+        pesan_peringatan("Produk tidak ditemukan!", Fore.RED, 12)       
+        input("→「 Enter untuk kembali 」")
         return
-
+    print("")
+    print(("═"*50).center(70))
+    print("")
     konfirmasi = [
-        inquirer.Confirm(
-            "yakin",
-            message=f"Yakin ingin menghapus produk '{produk['varian']} ({produk['kemasan']})'?",
-            default=False
-        )
-    ]
+        inquirer.List(
+            "konfirm",
+            message=f"Konfirmasi ingin menghapus produk {produk['varian']} ({produk['kemasan']})",
+            choices=["            1 │ Ya", "            2 │ Tidak"])]
     jawab_konfirmasi = inquirer.prompt(konfirmasi)
-    if jawab_konfirmasi and jawab_konfirmasi["yakin"]:
+    if jawab_konfirmasi and jawab_konfirmasi["konfirm"] == "            1 │ Ya":
         produk_list.remove(produk)
-        save_produk_to_csv()
-        print(Fore.GREEN + "Produk berhasil dihapus.")
+        save_produk_to_csv(produk_list)
+        pesan_berhasil("Produk berhasil dihapus!")
     else:
-        print(Fore.RED + "Produk batal dihapus.")
-    input("Tekan enter untuk kembali...")
+        pesan_peringatan("Produk batal dihapus!", Fore.RED, 12)
+    input("→「 Enter untuk kembali 」")
+
 
 # menu pembelian
 def menu_pembelian():
