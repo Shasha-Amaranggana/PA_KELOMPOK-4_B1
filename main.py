@@ -6,6 +6,8 @@ from data import akun, save_akun_to_csv, current_seller
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan
 from menu_konsumen import menu_konsumen
 from menu_seller import menu_seller
+from colorama import Fore, Style, init
+init(autoreset=True)
 
 def login():
     global current_seller
@@ -15,14 +17,14 @@ def login():
     password = input("Password: ".center(45))
     try:
         if username == "" or password == "":
-            pesan_peringatan("Semua kolom harus diisi!", 12)
+            pesan_peringatan("Semua kolom harus diisi!", Fore.YELLOW, 12)
             raise ValueError
         found = False
         for nomor, user in akun.items():
             if user["us"] == username and user["pw"] == password:
                 found = True
                 if user["status"].lower() != "aktif":
-                    pesan_peringatan(f"Akun '{username}' saat ini {user['status']}. Tidak bisa login!", 30)
+                    pesan_peringatan(f"Akun '{username}' saat ini {user['status']}. Tidak bisa login!", Fore. RED, 30)
                     raise ValueError
                 pesan_berhasil(f"Login berhasil! Selamat datang, {username}!")
                 input("→ 「 Enter untuk lanjut 」")
@@ -37,7 +39,7 @@ def login():
                 input("→ 「 Enter untuk kembali 」")
                 return
         if not found:
-            pesan_peringatan("Username atau Password salah atau akun belum terdaftar!", 27)
+            pesan_peringatan("Username atau Password salah atau akun belum terdaftar!", Fore.RED, 27)
             raise ValueError
     except ValueError:
         input("→ 「 Enter untuk kembali 」")
@@ -46,29 +48,37 @@ def login():
 def register():
     jud_utama()
     jud_sub("Silakan Registrasi")
-    print("   > Username min 5 karakter, mengandung huruf/angka,")
-    print("     tidak mengandung karakter spesial!")
-    print("   > Password min 8 karakter, mengandung huruf besar & kecil & angka,")
-    print("     tidak mengandung karakter spesial!")
-    print("   > Email harus valid dan berakhiran '@gmail.com'")
-    print("   > No. HP harus valid dan berawalan '08'")
+    print(Fore.BLUE + "  > Username min 5 karakter, mengandung huruf/angka," + Style.RESET_ALL)
+    print(Fore.BLUE + "    tidak mengandung karakter spesial!" + Style.RESET_ALL)
+    print(Fore.BLUE + "  > Password min 8 karakter, mengandung huruf besar & kecil & angka," + Style.RESET_ALL)
+    print(Fore.BLUE + "    tidak mengandung karakter spesial!" + Style.RESET_ALL)
+    print(Fore.BLUE + "  > Email harus valid dan berakhiran '@gmail.com'" + Style.RESET_ALL)
+    print(Fore.BLUE + "  > No. HP harus valid dan berawalan '08'" + Style.RESET_ALL)
     print("")
-    username = input("Username: ".center(40)).strip()
-    password = input("Password: ".center(40)).strip()
-    email = input("Email: ".center(40)).strip()
-    no_hp = input("No HP: ".center(40)).strip()
+    username = input("Username: ".center(40))
+    password = input("Password: ".center(40))
+    email = input("Email: ".center(40))
+    no_hp = input("No HP: ".center(40))
+    alamat = input("Alamat: ".center(40))
     try:
-        if username == "" or password == "" or email == "" or no_hp == "":
-            pesan_peringatan("Semua kolom harus diisi!", 12)
+        if username == "" or password == "" or email == "" or no_hp == "" or alamat == "":
+            pesan_peringatan("Semua kolom harus diisi!", Fore.YELLOW, 12)
             input("→ 「 Enter untuk kembali 」")
             return None
+        if not re.search(r"^[a-zA-Z0-9]{5,}$", username):
+            raise ValueError
+        if not re.search(r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$", password):
+            raise ValueError
+        if not no_hp.startswith("08"):
+            raise ValueError
+        if not email.endswith("@gmail.com"):
+            raise ValueError
         for user in akun.values():
             if user["us"] == username or user["email"] == email:
-                pesan_peringatan("User atau email telah tersedia", 12)
-                input("→ 「 Enter untuk kembali 」")
-                return None
+                pesan_peringatan("User atau email telah tersedia", Fore.RED, 12)
+                raise ValueError
         existing_ids = [k for k in akun.keys() if k.startswith("U_K")]
-        last_num = max([int(k.split("_")[1]) for k in existing_ids], default=0)
+        last_num = max([int(k.replace("U_K", "")) for k in existing_ids], default=0)
         new_id = f"U_K{last_num + 1}"
         akun.update({
             new_id: {
@@ -80,15 +90,15 @@ def register():
                 "tgl": datetime.now().strftime("%Y-%m-%d"),
                 "email": email,
                 "no_hp": no_hp,
-                "alamat": "",
+                "alamat": alamat,
                 "saldo": 0}})
         save_akun_to_csv(akun)
-        pesan_berhasil(f"Anda berhasil registrasi! Silakan login.")
+        pesan_berhasil("Anda berhasil registrasi! Silakan login untuk melanjutkan.")
         input("→ 「 Enter untuk kembali 」")
         return True
     except ValueError:
-        pesan_peringatan("Pastikan data yang diinput sesuai syarat!", 12)       
-        input("→ 「 Enter untuk kembali 」")
+        pesan_peringatan("Pastikan data yang diinput sesuai syarat!", Fore.YELLOW, 12)       
+        input("→「 Enter untuk kembali 」")
         return None
 
 while True:
@@ -99,9 +109,9 @@ while True:
             "menu",
             message="Pilih menu",
             choices=[
-                "1 | LOGIN".center(33),
-                "2 | REGISTER".center(35),
-                "3 | KELUAR".center(33)])]
+                "1 | LOGIN".center(28),
+                "2 | REGISTER".center(30),
+                "3 | KELUAR".center(28)])]
     answer = inquirer.prompt(questions)["menu"].strip()
 
     if answer == "1 | LOGIN":
