@@ -368,7 +368,7 @@ def menu_pemesanan():
             print("")
             print("═"*70)
             input("→ 「 Enter untuk kembali 」")
-        if pilihan == "2 │ HAPUS PEMESANAN":
+        elif pilihan == "2 │ HAPUS PEMESANAN":
             jud_utama()
             jud_sub("Hapus Pemesanan")
             hapus_pemesanan()
