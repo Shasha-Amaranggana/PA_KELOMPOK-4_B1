@@ -12,12 +12,12 @@ pesanan_list = []
 def tamp_sell(jenis):
     message = "Silakan pilih menu"
     daftar_menu = {
-        "1": ['1 │ AKUN'.center(31), '2 │ PENJUALAN'.center(37), '3 │ PEMBELIAN'.center(37),  '4 │ PEMESANAN'.center(37), '5 │ STATUS PEMESANAN'.center(43), '6 │ LOGOUT'.center(33)],
-        "2.1" : ['1 │ LIHAT DATA DIRI'.center(43), '2 │ EDIT DATA DIRI'.center(42), '3 │ KEMBALI'.center(35)],
-        "2.2" : ['1 │ TAMBAH PRODUK'.center(41), '2 │ LIHAT PRODUK'.center(40), '3 │ EDIT PRODUK'.center(39), '4 │ HAPUS PRODUK'.center(40), '5 │ KEMBALI'.center(35)],
-        "2.3" : ['1 │ LIHAT RINGKASAN PEMBELIAN'.center(53), '2 │ KEMBALI'.center(35)],
-        "2.4" : ['1 │ LIHAT PEMESANAN'.center(43), '2 │ HAPUS PEMESANAN'.center(43), '3 │ KEMBALI'.center(35)],
-        "2.5" : ['1 │ BUAT STATUS AWAL PESANAN'.center(52), '2 │ LIHAT STATUS PESANAN'.center(47), '3 │ KEMBALI'.center(35)]}
+        "1": ['1 │ AKUN'.center(25), '2 │ PENJUALAN'.center(31), '3 │ PEMBELIAN'.center(31),  '4 │ PEMESANAN'.center(31), '5 │ STATUS PEMESANAN'.center(37), '6 │ LOGOUT'.center(27)],
+        "2.1" : ['1 │ LIHAT DATA DIRI'.center(37), '2 │ EDIT DATA DIRI'.center(36), '3 │ KEMBALI'.center(29)],
+        "2.2" : ['1 │ TAMBAH PRODUK'.center(35), '2 │ LIHAT PRODUK'.center(34), '3 │ EDIT PRODUK'.center(33), '4 │ HAPUS PRODUK'.center(34), '5 │ KEMBALI'.center(29)],
+        "2.3" : ['1 │ LIHAT RINGKASAN PEMBELIAN'.center(47), '2 │ KEMBALI'.center(29)],
+        "2.4" : ['1 │ LIHAT PEMESANAN'.center(37), '2 │ HAPUS PEMESANAN'.center(37), '3 │ KEMBALI'.center(29)],
+        "2.5" : ['1 │ BUAT STATUS AWAL PESANAN'.center(46), '2 │ LIHAT STATUS PESANAN'.center(41), '3 │ KEMBALI'.center(29)]}
     choices = daftar_menu[jenis]
     answer = inquirer.prompt([
         inquirer.List(
@@ -202,7 +202,7 @@ def create_produk():
 def update_produk():
     global produk_list
     if len(produk_list) == 0:
-        print(Fore.YELLOW + "Belum ada produk yang ditambahkan.")
+        pesan_peringatan("Daftar produk masih kosong.", Fore.YELLOW, 12)
         input("→ 「 Enter untuk kembali 」")
         return
     pilihan_id = [
@@ -276,7 +276,7 @@ def update_produk():
 def delete_produk():
     global produk_list
     if len(produk_list) == 0:
-        print(Fore.YELLOW + "Belum ada produk yang ditambahkan.")
+        pesan_peringatan("Daftar produk masih kosong.", Fore.YELLOW, 12)
         input("→ 「 Enter untuk kembali 」")
         return
     pilihan_id = [
@@ -312,39 +312,28 @@ def delete_produk():
         pesan_peringatan("Produk batal dihapus!", Fore.RED, 12)
     input("→「 Enter untuk kembali 」")
 
-
-# menu pembelian
+# MENU PEMBELIAN
+# ════════════════════════════════════════════════════
 def menu_pembelian():
     while True:
-        clear()
-        print("=== MENU PEMBELIAN ===")
-        pertanyaan = [
-            inquirer.List(
-                "menu_pembelian",
-                message="Pilih menu:",
-                choices=[
-                    "Lihat Ringkasan Pembelian",
-                    "Kembali"
-                ]
-            )
-        ]
-        jawaban = inquirer.prompt(pertanyaan)
-        if jawaban is None:
-            break
-
-        pilihan = jawaban["menu_pembelian"]
-
-        if pilihan == "Lihat Ringkasan Pembelian":
+        jud_utama()
+        jud_sub("Menu Pembelian")
+        pilihan = tamp_sell("2.3")
+        if pilihan == "1 │ LIHAT RINGKASAN PEMBELIAN":
+            jud_utama()
+            jud_sub("Ringkasan Pembelian")
             lihat_ringkasan_pembelian()
-        elif pilihan == "Kembali":
+            print("")
+            print("═"*70)
+            input("→ 「 Enter untuk kembali 」")
+        elif pilihan == "2 │ KEMBALI":
             break
 
 def lihat_ringkasan_pembelian():
-    clear()
-    print("=== RINGKASAN PEMBELIAN ===")
-
-    if not pesanan_list:
-        print(Fore.YELLOW + "Belum ada data pembelian / pesanan.")
+    global pesanan_list
+    if len(pesanan_list) == 0:
+        pesan_peringatan("Daftar pembelian masih kosong.", Fore.YELLOW, 12)
+        return
     else:
         total_transaksi = len(pesanan_list)
         total_omzet = sum(p["total_harga"] for p in pesanan_list)
@@ -354,70 +343,55 @@ def lihat_ringkasan_pembelian():
         print("-" * 30)
 
         table = PrettyTable()
-        table.field_names = ["ID", "Nama User", "Total Harga", "Status"]
-
-        for psn in pesanan_list:
+        table.field_names = ["NO", " ID_U ", " ID_P ", " NAMA USER ", "TOTAL HARGA", " STATUS "]
+        for idx, p in enumerate(pesanan_list, start=1):
             table.add_row([
-                psn["id_pesanan"],
-                psn["nama_user"],
-                f"Rp{psn['total_harga']}",
-                psn.get("status_pesanan", "")
-            ])
-
+                idx,
+                p["id_pesanan"],
+                p["nama_user"],
+                f"Rp{p['total_harga']}",
+                p.get("status_pesanan", "")])
         table.align["ID"] = "c"
         table.align["Nama User"] = "l"
         table.align["Total Harga"] = "r"
         table.align["Status"] = "c"
-        print(table)
 
-    input("Tekan enter untuk kembali...")
+        table_str = table.get_string()
+        for line in table_str.split("\n"):
+            print(line.center(70))
 
-# menu pemesanan
+# MENU PEMESANAN
+# ════════════════════════════════════════════════════
 def menu_pemesanan():
     while True:
-        clear()
-        print("=== MENU PEMESANAN ===")
-        pertanyaan = [
-            inquirer.List(
-                "menu_pemesanan",
-                message="Pilih menu:",
-                choices=[
-                    "Lihat Pemesanan",
-                    "Hapus Pemesanan",
-                    "Kembali"
-                ]
-            )
-        ]
-        jawaban = inquirer.prompt(pertanyaan)
-        if jawaban is None:
-            break
-
-        pilihan = jawaban["menu_pemesanan"]
-
-        if pilihan == "Lihat Pemesanan":
+        jud_utama()
+        jud_sub("Menu Pemesanan")
+        pilihan = tamp_sell("2.4")
+        if pilihan == "1 │ LIHAT PEMESANAN":
+            jud_utama()
+            jud_sub("Daftar Pemesanan")
             lihat_pemesanan()
-        elif pilihan == "Hapus Pemesanan":
+            print("")
+            print("═"*70)
+            input("→ 「 Enter untuk kembali 」")
+        if pilihan == "2 │ HAPUS PEMESANAN":
+            jud_utama()
+            jud_sub("Hapus Pemesanan")
             hapus_pemesanan()
-        elif pilihan == "Kembali":
+            print("")
+            print("═"*70)
+            input("→ 「 Enter untuk kembali 」")
+        elif pilihan == "3 │ KEMBALI":
             break
 
 def lihat_pemesanan():
-    clear()
-    title = "DAFTAR PEMESANAN"
-    print(title.center(70, "="))
-
-    if not pesanan_list:
-        print(Fore.YELLOW + "Belum ada pemesanan.")
+    global pesanan_list
+    if len(pesanan_list) == 0:
+        pesan_peringatan("Daftar pemesanan masih kosong.", Fore.YELLOW, 12)
+        return
     else:
         table = PrettyTable()
-        table.field_names = [
-            "ID Pesanan",
-            "Nama User",
-            "Produk",
-            "Jumlah",
-            "Total Harga",
-            "Status"
-        ]
+        table.field_names = ["NO", " ID_U ", " ID_P ", " NAMA USER ", " PRODUK ", "TOTAL HARGA", " STATUS "]
 
         for psn in pesanan_list:
             table.add_row([
@@ -426,8 +400,7 @@ def lihat_pemesanan():
                 psn["produk"],
                 psn["jumlah"],
                 f"Rp{psn['total_harga']}",
-                psn.get("status_pesanan", "")
-            ])
+                psn.get("status_pesanan", "")])
         for field in table.field_names:
             table.align[field] = "c"
         table.align["Produk"] = "l"
@@ -435,10 +408,9 @@ def lihat_pemesanan():
     input("Tekan enter untuk kembali...")
 
 def hapus_pemesanan():
-    clear()
-    if not pesanan_list:
-        print(Fore.YELLOW + "Belum ada pemesanan yang bisa dihapus.")
-        input("Tekan enter untuk kembali...")
+    global pesanan_list
+    if len(pesanan_list) == 0:
+        pesan_peringatan("Daftar pemesanan masih kosong.", Fore.YELLOW, 12)
         return
 
     pilihan_pesanan = [
@@ -477,52 +449,42 @@ def hapus_pemesanan():
         print(Fore.RED + "Pemesanan batal dihapus.")
     input("Tekan enter untuk kembali...")
 
-# menu status pemesanan
+# MENU STATUS PEMESANAN
+# ════════════════════════════════════════════════════
 def menu_status_pemesanan():
     while True:
-        clear()
-        print("=== MENU STATUS PEMESANAN ===")
-        pertanyaan = [
-            inquirer.List(
-                "menu_status",
-                message="Pilih menu:",
-                choices=[
-                    "Buat Status Pesanan Awal",
-                    "Lihat Status Pesanan",
-                    "Kembali"
-                ]
-            )
-        ]
-        jawaban = inquirer.prompt(pertanyaan)
-        if jawaban is None:
-            break
-
-        pilihan = jawaban["menu_status"]
-
-        if pilihan == "Buat Status Pesanan Awal":
+        jud_utama()
+        jud_sub("Menu Status Pemesanan")
+        pilihan = tamp_sell("2.5")
+        if pilihan == "1 │ BUAT STATUS AWAL PESANAN":
+            jud_utama()
+            jud_sub("Status Awal Pesanan")
             buat_status_pesanan_awal()
-        elif pilihan == "Lihat Status Pesanan":
+            print("")
+            print("═"*70)
+            input("→ 「 Enter untuk kembali 」")
+        elif pilihan == "2 │ LIHAT STATUS PESANAN":
+            jud_utama()
+            jud_sub("Lihat Status Pemesanan")
             lihat_status_pesanan()
-        elif pilihan == "Kembali":
+            print("")
+            print("═"*70)
+            input("→ 「 Enter untuk kembali 」")
+        elif pilihan == "3 │ KEMBALI":
             break
 
 def buat_status_pesanan_awal():
-    clear()
-    print("=== BUAT STATUS PESANAN AWAL ===")
     pesanan_tanpa_status = [p for p in pesanan_list if not p.get("status_pesanan")]
 
     if not pesanan_tanpa_status:
-        print(Fore.YELLOW + "Tidak ada pesanan yang belum memiliki status.")
-        input("Tekan enter untuk kembali...")
+        pesan_peringatan("Tidak ada pesanan yang belum memiliki status.", Fore.YELLOW, 20)
         return
 
     pilihan_pesanan = [
         inquirer.List(
             "id_pesanan",
             message="Pilih pesanan yang akan diberi status awal:",
-            choices=[f"{p['id_pesanan']} - {p['nama_user']} ({p['produk']})" for p in pesanan_tanpa_status]
-        )
-    ]
+            choices=[f"{p['id_pesanan']} - {p['nama_user']} ({p['produk']})" for p in pesanan_tanpa_status])]
     jawaban = inquirer.prompt(pilihan_pesanan)
     if jawaban is None:
         return
@@ -542,25 +504,18 @@ def buat_status_pesanan_awal():
         inquirer.List(
             "status_awal",
             message="Pilih status pesanan awal:",
-            choices=status_awal_choices
-        )
-    ]
+            choices=status_awal_choices)]
     jawab_status = inquirer.prompt(tanya_status)
     if jawab_status is None:
         return
-
     pesanan["status_pesanan"] = jawab_status["status_awal"]
-
-    print(Fore.GREEN + f"Status pesanan ID {pesanan['id_pesanan']} berhasil diatur menjadi '{pesanan['status_pesanan']}'.")
-    input("Tekan enter untuk kembali...")
+    pesan_berhasil(f"Status pesanan ID {pesanan['id_pesanan']} berhasil diatur menjadi '{pesanan['status_pesanan']}'.")
 
 def lihat_status_pesanan():
-    clear()
-    title = "STATUS PEMESANAN"
-    print(title.center(70, "="))
-
-    if not pesanan_list:
-        print(Fore.YELLOW + "Belum ada pesanan.")
+    global pesanan_list
+    if len(pesanan_list) == 0:
+        pesan_peringatan("Daftar pemesanan masih kosong.", Fore.YELLOW, 12)
+        return
     else:
         table = PrettyTable()
         table.field_names = [
@@ -569,8 +524,7 @@ def lihat_status_pesanan():
             "Produk",
             "Jumlah",
             "Total Harga",
-            "Status"
-        ]
+            "Status"]
 
         for psn in pesanan_list:
             table.add_row([
@@ -579,10 +533,8 @@ def lihat_status_pesanan():
                 psn["produk"],
                 psn["jumlah"],
                 f"Rp{psn['total_harga']}",
-                psn.get("status_pesanan", "(belum ada status)")
-            ])
+                psn.get("status_pesanan", "(belum ada status)")])
         for field in table.field_names:
             table.align[field] = "c"
         table.align["Produk"] = "l"
         print(table)
-    input("Tekan enter untuk kembali...")
