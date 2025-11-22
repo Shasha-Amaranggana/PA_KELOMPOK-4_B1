@@ -107,7 +107,7 @@ while True:
     questions = [
         inquirer.List(
             "menu",
-            message="Pilih menu",
+            message="Silakan pilih menu",
             choices=[
                 "1 | LOGIN".center(28),
                 "2 | REGISTER".center(30),

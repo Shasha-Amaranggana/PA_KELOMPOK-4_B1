@@ -2,6 +2,23 @@ import inquirer
 from help import jud_utama, jud_sub, pesan_berhasil
 from fungsi_konsumen import lihat_akun, lihat_produk
 
+def tamp_sell(jenis):
+    message = "Silakan pilih menu"
+    daftar_menu = {
+        "1": ['1 │ AKUN'.center(25), '2 │ PENJUALAN'.center(31), '3 │ PEMBELIAN'.center(31),  '4 │ PEMESANAN'.center(31), '5 │ STATUS PEMESANAN'.center(37), '6 │ LOGOUT'.center(27)],
+        "2.1" : ['1 │ LIHAT DATA DIRI'.center(37), '2 │ EDIT DATA DIRI'.center(36), '3 │ KEMBALI'.center(29)],
+        "2.2" : ['1 │ TAMBAH PRODUK'.center(35), '2 │ LIHAT PRODUK'.center(34), '3 │ EDIT PRODUK'.center(33), '4 │ HAPUS PRODUK'.center(34), '5 │ KEMBALI'.center(29)],
+        "2.3" : ['1 │ LIHAT RINGKASAN PEMBELIAN'.center(47), '2 │ KEMBALI'.center(29)],
+        "2.4" : ['1 │ LIHAT PEMESANAN'.center(37), '2 │ HAPUS PEMESANAN'.center(37), '3 │ KEMBALI'.center(29)],
+        "2.5" : ['1 │ BUAT STATUS AWAL PESANAN'.center(46), '2 │ LIHAT STATUS PESANAN'.center(41), '3 │ KEMBALI'.center(29)]}
+    choices = daftar_menu[jenis]
+    answer = inquirer.prompt([
+        inquirer.List(
+            'menu',
+            message = message,
+            choices = choices)])
+    pilihan = answer['menu'].strip()
+    return pilihan 
 
 def menu_konsumen(username):
     while True:

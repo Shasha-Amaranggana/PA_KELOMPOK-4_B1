@@ -10,10 +10,10 @@ init(autoreset=True)
 def tamp_bos(jenis):
     message = "Silakan pilih menu"
     daftar_menu = {
-        "1": ['1 │ DAFTAR AKUN'.center(40), '2 │ DAFTAR PRODUK'.center(42), '3 │ LAPORAN PENJUALAN'.center(46),  '4 │ LOGOUT'.center(34)],
-        "2.1" : ['1 │ MENU AKUN SELLER'.center(43), '2 │ MENU AKUN KONSUMEN'.center(45), '3 │ KEMBALI'.center(35)],
-        "3.1" : ['1 │ DAFTAR AKUN SELLER'.center(45), '2 │ BUAT AKUN SELLER'.center(43), '3 │ UBAH STATUS AKUN SELLER'.center(51), '4 │ KEMBALI'.center(35)],
-        "3.2" : ['1 │ DAFTAR AKUN KONSUMEN'.center(47), '2 │ UBAH STATUS AKUN KONSUMEN'.center(53), '3 │ KEMBALI'.center(35)],
+        "1": ['1 │ DAFTAR AKUN'.center(33), '2 │ DAFTAR PRODUK'.center(36), '3 │ LAPORAN PENJUALAN'.center(40),  '4 │ LOGOUT'.center(28)],
+        "2.1" : ['1 │ MENU AKUN SELLER'.center(37), '2 │ MENU AKUN KONSUMEN'.center(39), '3 │ KEMBALI'.center(29)],
+        "3.1" : ['1 │ DAFTAR AKUN SELLER'.center(39), '2 │ BUAT AKUN SELLER'.center(37), '3 │ UBAH STATUS AKUN SELLER'.center(45), '4 │ KEMBALI'.center(29)],
+        "3.2" : ['1 │ DAFTAR AKUN KONSUMEN'.center(41), '2 │ UBAH STATUS AKUN KONSUMEN'.center(47), '3 │ KEMBALI'.center(29)],
         "4.1" : ['1 │ Aktifkan Akun'.center(41), '2 │ Nonaktifkan Akun'.center(43), '3 │ Hapus Akun'.center(38)]}
     choices = daftar_menu[jenis] 
     answer = inquirer.prompt([
