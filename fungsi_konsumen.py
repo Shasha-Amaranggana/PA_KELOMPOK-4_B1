@@ -186,6 +186,32 @@ def lihat_keranjang(username):
         print(line.center(70))
     print("\n")
 
+def edit_keranjang(username, keranjang_user):
+    
+    if username not in keranjang_user or not keranjang_user[username]:
+        print("Keranjang Anda masih kosong.")
+        return
+    print("=== Edit Keranjang Belanja ===")
+
+    table = PrettyTable()
+    table.field_names = ["ID", "Nama Produk", "Size", "Harga", "Jumlah", "Total"]
+
+    for pid, item in keranjang_user[username].items():
+        total = item["harga"] * item["jumlah"]
+        table.add_row([pid, item["nama"], item["size"], item["harga"], item["jumlah"], total])
+    print(table)
+
+    hapus_id = input("\nMasukkan ID produk yang ingin dihapus: ")
+
+    if hapus_id not in keranjang_user[username]:
+        print(" ID tidak ditemukan di keranjang.")
+        return
+
+    del keranjang_user[username][hapus_id]
+    print("Barang berhasil dihapus dari keranjang")
+
+
+
 
 
 # MENU BELANJA
