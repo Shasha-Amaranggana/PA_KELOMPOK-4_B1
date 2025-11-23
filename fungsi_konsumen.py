@@ -1,31 +1,83 @@
 import inquirer
-from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan
+from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_enter
 from data_konsumen import keranjang
 from menu import daftar_produk
 from prettytable import PrettyTable
+from data import akun, save_akun_to_csv
+from colorama import Fore, Style, init
+init(autoreset=True)
 
-def lihat_akun():
+def menu_akun(current_user):
     while True:
         jud_utama()
-        jud_sub("Akun Anda")
-        questions = [
-            inquirer.List(
-                "menu",
-                message="Pilih menu:",
-                choices=[
-                    "1. Lihat Akun (data diri)",
-                    "2. Edit data diri",
-                    "3. Kembali"])]
-        
-        answer = inquirer.prompt(questions)["menu"]
-
-        if answer == "1. Lihat Akun (data diri)":
-            lihat_data_diri()
-        elif answer == "2. Edit data diri":
-            edit_data_diri()
-        elif answer == "3. Kembali":
+        jud_sub("Menu Akun")
+        # import tamp_kons here to avoid circular import at module load time
+        from menu_konsumen import tamp_kons
+        pilih = tamp_kons("2.1")
+        if pilih == "1 │ LIHAT DATA DIRI":
+            jud_utama()
+            jud_sub("Data Diri Seller")
+            lihat_data_diri(current_user)
+            print("")
+            inp_enter()
+        elif pilih == "2 │ EDIT DATA DIRI":
+            jud_utama()
+            jud_sub("Edit Data Diri Seller")
+            edit_data_diri(current_user)
+            inp_enter()
+        elif pilih == "3 │ KEMBALI":
             break
-        
+
+def lihat_data_diri(current_user):
+    table = PrettyTable()
+    table.field_names = ["    NAMA    ", "         DATA         "]
+    table.add_row(["Username", current_user.get("us")])
+    table.add_row(["Password", current_user.get("pw")])
+    table.add_row(["Email", current_user.get("email")])
+    table.add_row(["No. HP", current_user.get("no_hp")])
+    table.add_row(["Alamat", current_user.get("alamat")])
+    table.align["    NAMA    "] = "l"
+    table.align["         DATA         "] = "l"
+    table_str = table.get_string()
+    for line in table_str.split("\n"):
+        print(line.center(70))
+
+def edit_data_diri(current_user):
+    print(Fore.BLUE + "  > Lewati jika tidak ingin mengubah data.\n" + Style.RESET_ALL)
+
+    pertanyaan = [
+        inquirer.Text("nama", message="Username baru", default=current_user.get("us", "")),
+        inquirer.Text("password", message="Password baru", default=current_user.get("pw", "")),
+        inquirer.Text("email", message="Email baru", default=current_user.get("email", "")),
+        inquirer.Text("no_hp", message="No. HP baru", default=current_user.get("no_hp", "")),
+        inquirer.Text("alamat", message="Alamat baru", default=current_user.get("alamat", "")),
+    ]
+    jawaban = inquirer.prompt(pertanyaan)
+    if jawaban is None:
+        return
+    
+    email_val = (jawaban.get("email") or current_user.get("email") or "").strip()
+    no_hp_val = (jawaban.get("no_hp") or current_user.get("no_hp") or "").strip()
+    if not email_val.endswith("@gmail.com") or not no_hp_val.startswith("08"):
+        if not email_val.endswith("@gmail.com"):
+            pesan_peringatan("Email harus valid dan berakhiran '@gmail.com'!", Fore.YELLOW, 30)
+        if not no_hp_val.startswith("08"):
+            pesan_peringatan("No. HP harus valid dan berawalan '08'!", Fore.YELLOW, 30)
+        return
+
+    current_user["us"] = jawaban["nama"] or current_user["us"]
+    current_user["pw"] = jawaban["password"] or current_user["pw"]
+    current_user["email"] = email_val
+    current_user["no_hp"] = no_hp_val
+    current_user["alamat"] = jawaban["alamat"] or current_user["alamat"]
+
+    if "id" in current_user:
+        akun[current_user["id"]] = current_user
+        save_akun_to_csv(akun)
+    pesan_berhasil("Data akun berhasil diubah!")
+
+
+
 def lihat_produk():
     while True:
         jud_utama()
@@ -46,8 +98,8 @@ def lihat_produk():
             belanja()
         elif answer == "2. Kembali":
             break
-def keranjang_belanja():
 
+def keranjang_belanja():
     while True:
         jud_utama()
         jud_sub("Keranjang Belanja")
@@ -77,7 +129,6 @@ def keranjang_belanja():
             break
 
 def belanja():
-
     while True:
         jud_utama()
         jud_sub("Pesan")
@@ -131,7 +182,6 @@ def saldo():
     while True:
         jud_utama()
         jud_sub("Saldo")
-
         questions = [
             inquirer.List(
                 "menu",

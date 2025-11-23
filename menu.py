@@ -390,17 +390,17 @@ def menu_seller(current_user):
 def menu_akun(current_user):
     while True:
         jud_utama()
-        jud_sub("Menu Akun Seller")
+        jud_sub("Menu Akun")
         pilih = tamp_sell("2.1")
         if pilih == "1 │ LIHAT DATA DIRI":
             jud_utama()
-            jud_sub("Data Diri Seller")
+            jud_sub("Data Diri Anda")
             lihat_data_diri(current_user)
             print("")
             inp_enter()
         elif pilih == "2 │ EDIT DATA DIRI":
             jud_utama()
-            jud_sub("Edit Data Diri Seller")
+            jud_sub("Edit Data Diri Anda")
             edit_data_diri(current_user)
             inp_enter()
         elif pilih == "3 │ KEMBALI":
