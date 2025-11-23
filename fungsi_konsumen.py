@@ -137,16 +137,16 @@ def saldo():
                 "menu",
                 message="Pilih menu:",
                 choices=[
-                    "1. Saldo anda",
-                    "2. Top up",
+                    "1. Saldo Anda",
+                    "2. Top Up",
                     "3. Kembali"])]
 
         answer = inquirer.prompt(questions)["menu"]
 
-        if answer == "1. Saldo anda":
+        if answer == "1. Saldo Anda":
             cek_saldo()
 
-        elif answer == "2. Top up":
+        elif answer == "2. Top Up":
             top_up()
 
         elif answer == "3. Kembali":
