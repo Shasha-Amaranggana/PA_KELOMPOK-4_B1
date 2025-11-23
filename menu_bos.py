@@ -3,7 +3,7 @@ import re
 from prettytable import PrettyTable
 from datetime import datetime
 from data import akun, produk_list, save_akun_to_csv
-from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_no
+from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_no, inp_enter
 from colorama import Fore, Style, init
 init(autoreset=True)
 
@@ -14,7 +14,7 @@ def tamp_bos(jenis):
         "2.1" : ['1 │ MENU AKUN SELLER'.center(37), '2 │ MENU AKUN KONSUMEN'.center(39), '3 │ KEMBALI'.center(29)],
         "3.1" : ['1 │ DAFTAR AKUN SELLER'.center(39), '2 │ BUAT AKUN SELLER'.center(37), '3 │ UBAH STATUS AKUN SELLER'.center(45), '4 │ KEMBALI'.center(29)],
         "3.2" : ['1 │ DAFTAR AKUN KONSUMEN'.center(41), '2 │ UBAH STATUS AKUN KONSUMEN'.center(47), '3 │ KEMBALI'.center(29)],
-        "4.1" : ['1 │ Aktifkan Akun'.center(41), '2 │ Nonaktifkan Akun'.center(43), '3 │ Hapus Akun'.center(38)]}
+        "4.1" : ['1 │ Aktifkan Akun'.center(35), '2 │ Nonaktifkan Akun'.center(37), '3 │ Hapus Akun'.center(32)]}
     choices = daftar_menu[jenis] 
     answer = inquirer.prompt([
         inquirer.List(
@@ -38,15 +38,13 @@ def menu_boss():
             jud_sub("Daftar Produk")
             daftar_produk()
             print("")
-            print("═"*70)
-            input("→ 「 Enter untuk kembali 」")
+            inp_enter()
         elif pilih == "3 │ LAPORAN PENJUALAN":
             jud_utama()
             jud_sub("Laporan Penjualan")
             laporan()
             print("")
-            print("═"*70)
-            input("→ 「 Enter untuk kembali 」")
+            inp_enter()
         elif pilih == "4 │ LOGOUT":
             pesan_berhasil("Logout Berhasil!")
             break
@@ -68,7 +66,7 @@ def daftar_akun():
 def daftar_produk():
     global produk_list
     if len(produk_list) == 0:
-        print(Fore.YELLOW + "Belum ada produk yang ditambahkan.")
+        pesan_peringatan("Daftar produk masih kosong.", Fore.YELLOW, 12)
         return
     table = PrettyTable()
     table.field_names = ["NO", " ID ", "  VARIAN  ", "UKURAN", "HARGA", " STOK "]
@@ -100,8 +98,7 @@ def menu_akun_seller():
             jud_sub("Daftar Akun Seller")
             daftar_seller()
             print("")
-            print("═"*70)
-            input("→ 「 Enter untuk kembali 」")
+            inp_enter()
         elif pilih == "2 │ BUAT AKUN SELLER":
             jud_utama()
             jud_sub("Buat Akun Seller")
@@ -121,8 +118,7 @@ def menu_akun_konsumen():
             jud_sub("Daftar Akun Konsumen")
             daftar_konsumen()
             print("")
-            print("═"*70)
-            input("→ 「 Enter untuk kembali 」")
+            inp_enter()
         elif pilih == "2 │ UBAH STATUS AKUN KONSUMEN":
             stat_konsumen()
         elif pilih == "3 │ KEMBALI":
@@ -172,7 +168,7 @@ def regist_seller():
     try:
         if username == "" or password == "" or email == "" or no_hp == "" or alamat == "":
             pesan_peringatan("Semua kolom harus diisi!", Fore.YELLOW, 12)
-            input("→ 「 Enter untuk kembali 」")
+            inp_enter()
             return None
         if not re.search(r"^[a-zA-Z0-9]{5,}$", username):
             raise ValueError
@@ -203,11 +199,11 @@ def regist_seller():
                 "saldo": 0}})
         save_akun_to_csv(akun)
         pesan_berhasil(f"Akun seller berhasil dibuat! ID: {new_id}")
-        input("→ 「 Enter untuk kembali 」")
+        inp_enter()
         return True
     except ValueError:
         pesan_peringatan("Pastikan data yang diinput sesuai syarat!", Fore.YELLOW, 12)       
-        input("→ 「 Enter untuk kembali 」")
+        inp_enter()
         return None
 
 def stat_seller():
@@ -221,31 +217,41 @@ def stat_seller():
             return None
         if not no_char.isdigit():
             pesan_peringatan("Input harus berupa angka!", Fore.YELLOW, 15)
-            input("→ 「 Enter untuk kembali 」")
+            inp_enter()
             continue
         no_char = int(no_char)
         seller_list = list({nomor: k for nomor, k in akun.items() if k["role"] == "Seller"}.keys())
         if not (1 <= no_char <= len(seller_list)):
             pesan_peringatan("Nomor akun seller tidak ditemukan!", Fore.YELLOW, 15)
-            input("→ 「 Enter untuk kembali 」")
+            inp_enter()
             continue
         akun_id = seller_list[no_char - 1]
         pilih = tamp_bos("4.1")
         if pilih == "1 │ Aktifkan Akun":
-            akun[akun_id]["status"] = "Aktif"
-            save_akun_to_csv(akun)
-            pesan_berhasil("Akun berhasil diaktifkan!")
-            input("→ 「 Enter untuk kembali 」")
+            if akun[akun_id]["status"] == "Aktif":
+                pesan_peringatan("Akun sudah dalam status Aktif!", Fore.YELLOW, 15)
+                inp_enter()
+                continue
+            else:
+                akun[akun_id]["status"] = "Aktif"
+                save_akun_to_csv(akun)
+                pesan_berhasil("Akun berhasil diaktifkan!")
+                inp_enter()
         elif pilih == "2 │ Nonaktifkan Akun":
-            akun[akun_id]["status"] = "Nonaktif"
-            save_akun_to_csv(akun)
-            pesan_berhasil("Akun berhasil dinonaktifkan!")
-            input("→ 「 Enter untuk kembali 」")
+            if akun[akun_id]["status"] == "Nonaktif":
+                pesan_peringatan("Akun sudah dalam status Nonaktif!", Fore.YELLOW, 15)
+                inp_enter()
+                continue
+            else:
+                akun[akun_id]["status"] = "Nonaktif"
+                save_akun_to_csv(akun)
+                pesan_berhasil("Akun berhasil dinonaktifkan!")
+                inp_enter()
         elif pilih == "3 | Hapus Akun":
             del akun[akun_id]
             save_akun_to_csv(akun)
             pesan_berhasil("Akun berhasil dihapus!")
-            input("→ 「 Enter untuk kembali 」")
+            inp_enter()
 
 def daftar_konsumen():
     jud_utama()
@@ -284,28 +290,38 @@ def stat_konsumen():
             return None
         if not no_char.isdigit():
             pesan_peringatan("Input harus berupa angka!", Fore.YELLOW, 15)
-            input("→ 「 Enter untuk kembali 」")
+            inp_enter()
             continue
         no_char = int(no_char)
         konsumen_list = list({nomor: k for nomor, k in akun.items() if k["role"] == "Konsumen"}.keys())
         if not (1 <= no_char <= len(konsumen_list)):
             pesan_peringatan("Nomor akun seller tidak ditemukan!", Fore.YELLOW, 15)
-            input("→ 「 Enter untuk kembali 」")
+            inp_enter()
             continue
         akun_id = konsumen_list[no_char - 1]
         pilih = tamp_bos("4.1")
         if pilih == "1 │ Aktifkan Akun":
-            akun[akun_id]["status"] = "Aktif"
-            save_akun_to_csv(akun)
-            pesan_berhasil("Akun berhasil diaktifkan!")
-            input("→ 「 Enter untuk kembali 」")
+            if akun[akun_id]["status"] == "Aktif":
+                pesan_peringatan("Akun sudah dalam status Aktif!", Fore.YELLOW, 15)
+                inp_enter()
+                continue
+            else:
+                akun[akun_id]["status"] = "Aktif"
+                save_akun_to_csv(akun)
+                pesan_berhasil("Akun berhasil diaktifkan!")
+                inp_enter()
         elif pilih == "2 │ Nonaktifkan Akun":
-            akun[akun_id]["status"] = "Nonaktif"
-            save_akun_to_csv(akun)
-            pesan_berhasil("Akun berhasil dinonaktifkan!")
-            input("→ 「 Enter untuk kembali 」")
+            if akun[akun_id]["status"] == "Nonaktif":
+                pesan_peringatan("Akun sudah dalam status Nonaktif!", Fore.YELLOW, 15)
+                inp_enter()
+                continue
+            else:
+                akun[akun_id]["status"] = "Nonaktif"
+                save_akun_to_csv(akun)
+                pesan_berhasil("Akun berhasil dinonaktifkan!")
+                inp_enter()
         elif pilih == "3 | Hapus Akun":
             del akun[akun_id]
             save_akun_to_csv(akun)
             pesan_berhasil("Akun berhasil dihapus!")
-            input("→ 「 Enter untuk kembali 」")
+            inp_enter()
