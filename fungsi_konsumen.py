@@ -1,7 +1,7 @@
 import inquirer
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan
 from data_konsumen import keranjang
-from menu_bos import daftar_produk
+from menu import daftar_produk
 from prettytable import PrettyTable
 
 def lihat_akun():
