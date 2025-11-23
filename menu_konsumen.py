@@ -1,6 +1,6 @@
 import inquirer
 from help import jud_utama, jud_sub, pesan_berhasil
-from fungsi_konsumen import lihat_akun, lihat_produk
+from fungsi_konsumen import lihat_akun, lihat_produk, keranjang_belanja, belanja, pesanan_anda, saldo
 
 def tamp_sell(jenis):
     message = "Silakan pilih menu"
@@ -32,7 +32,7 @@ def menu_konsumen(username):
                     "1 | LIHAT AKUN",
                     "2 | LIHAT PRODUK",
                     "3 | KERANJANG BELANJA",
-                    "4 | PESANAN ANDA",
+                    "4 | BELANJA",
                     "5 | RIWAYAT",
                     "6 | SALDO",
                     "7 | LOGOUT"])]
@@ -50,14 +50,14 @@ def menu_konsumen(username):
             jud_utama()
             jud_sub("Keranjang Belanja")
             keranjang_belanja(username)
-        elif answer == "4 | PESANAN ANDA":
+        elif answer == "4 | BELANJA":
             jud_utama()
-            jud_sub("Pesanan Anda")
-            pesanan_anda(username)
+            jud_sub("Belanja")
+            belanja(username)
         elif answer == "5 | RIWAYAT":
             jud_utama()
             jud_sub("Riwayat Belanja")
-            riwayat(username)
+            pesanan_anda(username)
         elif answer == "6 | SALDO":
             jud_utama()
             jud_sub("Saldo")
