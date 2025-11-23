@@ -7,6 +7,24 @@ from data import akun, save_akun_to_csv
 from colorama import Fore, Style, init
 init(autoreset=True)
 
+def tamp_kons(jenis):
+    message = "Silakan pilih menu"
+    daftar_menu = {
+        "1": ['1 │ AKUN'.center(25), '2 | LIHAT PRODUK'.center(33), '3 | KERANJANG BELANJA'.center(39),  '4 | BELANJA'.center(29), '5 | RIWAYAT'.center(29), '6 | SALDO'.center(27), '7 | LOGOUT'.center(27)],
+        "2.1" : ['1 │ LIHAT DATA DIRI'.center(37), '2 │ EDIT DATA DIRI'.center(36), '3 │ KEMBALI'.center(29)],
+        "4.1" : ['1 │ TOP UP'.center(28), '2 │ KEMBALI'.center(29)]}
+    choices = daftar_menu[jenis]
+    answer = inquirer.prompt([
+        inquirer.List(
+            'menu',
+            message = message,
+            choices = choices)])
+    pilihan = answer['menu'].strip()
+    return pilihan 
+
+
+# MENU AKUN
+# ════════════════════════════════════════════════════
 def menu_akun(current_user):
     while True:
         jud_utama()
@@ -77,7 +95,8 @@ def edit_data_diri(current_user):
     pesan_berhasil("Data akun berhasil diubah!")
 
 
-
+# MENU LIHAT PRODUK
+# ════════════════════════════════════════════════════
 def lihat_produk():
     while True:
         jud_utama()
@@ -99,6 +118,9 @@ def lihat_produk():
         elif answer == "2. Kembali":
             break
 
+
+# MENU KERANJANG BELANJA
+# ════════════════════════════════════════════════════
 def keranjang_belanja():
     while True:
         jud_utama()
@@ -128,6 +150,9 @@ def keranjang_belanja():
         elif answer == "4. Kembali":
             break
 
+
+# MENU BELANJA
+# ════════════════════════════════════════════════════
 def belanja():
     while True:
         jud_utama()
@@ -153,6 +178,9 @@ def belanja():
         elif answer == "3. Kembali":
             break
 
+
+# MENU RIWAYAT
+# ════════════════════════════════════════════════════
 def pesanan_anda():
     while True:
         jud_utama()
@@ -178,26 +206,48 @@ def pesanan_anda():
         elif answer == "3. Kembali":
             break
 
-def saldo():
+
+# MENU SALDO
+# ════════════════════════════════════════════════════
+def saldo(current_user):
     while True:
         jud_utama()
-        jud_sub("Saldo")
-        questions = [
-            inquirer.List(
-                "menu",
-                message="Pilih menu:",
-                choices=[
-                    "1. Saldo Anda",
-                    "2. Top Up",
-                    "3. Kembali"])]
-
-        answer = inquirer.prompt(questions)["menu"]
-
-        if answer == "1. Saldo Anda":
-            cek_saldo()
-
-        elif answer == "2. Top Up":
-            top_up()
-
-        elif answer == "3. Kembali":
+        jud_sub("Saldo Anda")
+        pesan_peringatan(f"Rp{current_user.get('saldo', 0):,}".replace(",", "."), Fore.CYAN, 20)
+        print("")
+        print(("═"*50).center(70))
+        pilih = tamp_kons("4.1")
+        if pilih == "1 │ TOP UP":
+            top_up(current_user)
+        elif pilih == "2 │ KEMBALI":
             break
+
+def top_up(current_user):
+    while True:
+        jud_utama()
+        jud_sub("Top Up Saldo")
+        inp = input("Masukkan jumlah saldo top up (ketik 'kembali' untuk kembali): ").strip()
+        if inp == "kembali":
+            return None
+        try:
+            topup = int(inp)
+            if topup == 0 or topup < 0:
+                pesan_peringatan("Jumlah top up tidak boleh nol atau negatif!", Fore.YELLOW, 20)
+                inp_enter()
+                continue
+            elif topup < 10000:
+                pesan_peringatan("Jumlah top up minimal Rp10.000!", Fore.YELLOW, 30)
+                inp_enter()
+                continue
+            else:
+                current_user["saldo"] = current_user.get("saldo", 0) + topup
+                if "id" in current_user:
+                    akun[current_user["id"]] = current_user
+                    save_akun_to_csv(akun)
+                pesan_berhasil(f"Top up sebesar Rp {topup:,} berhasil!")
+                inp_enter()
+                break
+        except ValueError:
+            pesan_peringatan("Input tidak valid! Silakan masukkan angka.", Fore.YELLOW, 30)
+            inp_enter()
+

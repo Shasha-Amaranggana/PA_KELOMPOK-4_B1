@@ -27,7 +27,7 @@ def inp_menu():
 def inp_no():
     print("")
     print(("═"*50).center(70))
-    menu = input("╰┈➤  Masukkan nomor yang ingin dipilih (jika ingin kembali, ketik 'kembali'): ").strip().lower()
+    menu = input("╰┈➤  Masukkan nomor yang ingin dipilih (ketik 'kembali' untuk kembali): ").strip().lower()
     print("")
     return menu
 
@@ -40,7 +40,7 @@ def pesan_berhasil(pesan):
 
 def pesan_peringatan(pesan, warna, jumlah):
     print("")
-    print(Style.RESET_ALL + Fore.YELLOW + ("──" * jumlah).center(70))
+    print(Style.RESET_ALL + warna + ("──" * jumlah).center(70))
     print(warna + Style.BRIGHT + pesan.center(70))
     print(warna + ("──" * jumlah).center(70) + Style.RESET_ALL)
     print("")
