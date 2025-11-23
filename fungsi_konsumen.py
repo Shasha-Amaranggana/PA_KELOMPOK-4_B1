@@ -1,6 +1,6 @@
 import inquirer
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_enter
-from data_konsumen import keranjang
+from data_konsumen import keranjang_user, init_keranjang_user
 from menu import daftar_produk
 from prettytable import PrettyTable
 from data import akun, save_akun_to_csv
@@ -149,6 +149,43 @@ def keranjang_belanja():
 
         elif answer == "4. Kembali":
             break
+
+def lihat_keranjang(username):
+    init_keranjang_user(username)
+    keranjang = keranjang_user[username]
+
+    if not keranjang:
+        pesan_peringatan("KERANJANG MASIH KOSONG", Fore.YELLOW, 30)
+        return
+
+    table = PrettyTable()
+    table.field_names = ["ID", "Nama Produk", "Size", "Harga", "Jumlah", "Total"]
+    table.align["ID"] = "l"
+    table.align["Nama Produk"] = "l"
+    table.align["Size"] = "l"
+    table.align["Harga"] = "r"
+    table.align["Jumlah"] = "r"
+    table.align["Total"] = "r"
+
+    for pid, item in keranjang.items():
+        harga = int(item["pz"])
+        jumlah = int(item["jumlah"])
+        total = harga * jumlah
+
+        table.add_row([
+            pid,
+            item["nm"],
+            item["sz"],
+            f"Rp{harga:,}",
+            jumlah,
+            f"Rp{total:,}"
+        ])
+
+    table_str = table.get_string()
+    for line in table_str.split("\n"):
+        print(line.center(70))
+    print("\n")
+
 
 
 # MENU BELANJA
