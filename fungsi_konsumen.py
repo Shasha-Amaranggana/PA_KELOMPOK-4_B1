@@ -43,7 +43,7 @@ def lihat_produk():
         answer = inquirer.prompt(questions)["menu"]
 
         if answer == "1. Belanja":
-            pesanan_anda()
+            belanja()
         elif answer == "2. Kembali":
             break
 def keranjang_belanja():
@@ -72,7 +72,7 @@ def keranjang_belanja():
         elif answer == "3. Kembali":
             break
 
-def pesanan_anda():
+def belanja():
 
     while True:
         jud_utama()
@@ -98,7 +98,7 @@ def pesanan_anda():
         elif answer == "3. Kembali":
             break
 
-def riwayat():
+def pesanan_anda():
     while True:
         jud_utama()
         jud_sub("Riwayat")
