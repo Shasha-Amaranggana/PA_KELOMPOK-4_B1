@@ -1,67 +1,40 @@
 import inquirer
 from help import jud_utama, jud_sub, pesan_berhasil
-from fungsi_konsumen import lihat_akun, lihat_produk, keranjang_belanja, belanja, pesanan_anda, saldo
+from fungsi_konsumen import menu_akun, lihat_produk, keranjang_belanja, belanja, pesanan_anda, saldo, tamp_kons
+from menu import menu_akun
 
-def tamp_sell(jenis):
-    message = "Silakan pilih menu"
-    daftar_menu = {
-        "1": ['1 │ AKUN'.center(25), '2 │ PENJUALAN'.center(31), '3 │ PEMBELIAN'.center(31),  '4 │ PEMESANAN'.center(31), '5 │ STATUS PEMESANAN'.center(37), '6 │ LOGOUT'.center(27)],
-        "2.1" : ['1 │ LIHAT DATA DIRI'.center(37), '2 │ EDIT DATA DIRI'.center(36), '3 │ KEMBALI'.center(29)],
-        "2.2" : ['1 │ TAMBAH PRODUK'.center(35), '2 │ LIHAT PRODUK'.center(34), '3 │ EDIT PRODUK'.center(33), '4 │ HAPUS PRODUK'.center(34), '5 │ KEMBALI'.center(29)],
-        "2.3" : ['1 │ LIHAT RINGKASAN PEMBELIAN'.center(47), '2 │ KEMBALI'.center(29)],
-        "2.4" : ['1 │ LIHAT PEMESANAN'.center(37), '2 │ HAPUS PEMESANAN'.center(37), '3 │ KEMBALI'.center(29)],
-        "2.5" : ['1 │ BUAT STATUS AWAL PESANAN'.center(46), '2 │ LIHAT STATUS PESANAN'.center(41), '3 │ KEMBALI'.center(29)]}
-    choices = daftar_menu[jenis]
-    answer = inquirer.prompt([
-        inquirer.List(
-            'menu',
-            message = message,
-            choices = choices)])
-    pilihan = answer['menu'].strip()
-    return pilihan 
 
-def menu_konsumen(username):
+# ════════════════════════════════════════════════════
+#              MENU KONSUMEN DAN FITURNYA
+# ════════════════════════════════════════════════════
+
+# MENU KONSUMEN UTAMA
+# ════════════════════════════════════════════════════
+def menu_konsumen(current_user):
     while True:
         jud_utama()
-        jud_sub(f"Selamat Datang, {username}!")
-        questions = [
-            inquirer.List(
-                "menu",
-                message="Pilih menu:",
-                choices=[
-                    "1 | LIHAT AKUN",
-                    "2 | LIHAT PRODUK",
-                    "3 | KERANJANG BELANJA",
-                    "4 | BELANJA",
-                    "5 | RIWAYAT",
-                    "6 | SALDO",
-                    "7 | LOGOUT"])]
-        answer = inquirer.prompt(questions)["menu"]
-
-        if answer == "1 | LIHAT AKUN":
-            jud_utama()
-            jud_sub("Akun Saya")
-            lihat_akun(username)
-        elif answer == "2 | LIHAT PRODUK":
+        jud_sub(f"Selamat Datang!")
+        pilih = tamp_kons("1")
+        if pilih == "1 │ AKUN":
+            menu_akun(current_user)
+        elif pilih == "2 | LIHAT PRODUK":
             jud_utama()
             jud_sub("Daftar Produk")
             lihat_produk()
-        elif answer == "3 | KERANJANG BELANJA":
+        elif pilih == "3 | KERANJANG BELANJA":
             jud_utama()
             jud_sub("Keranjang Belanja")
-            keranjang_belanja(username)
-        elif answer == "4 | BELANJA":
+            keranjang_belanja(current_user)
+        elif pilih == "4 | BELANJA":
             jud_utama()
             jud_sub("Belanja")
-            belanja(username)
-        elif answer == "5 | RIWAYAT":
+            belanja(current_user)
+        elif pilih == "5 | RIWAYAT":
             jud_utama()
             jud_sub("Riwayat Belanja")
-            pesanan_anda(username)
-        elif answer == "6 | SALDO":
-            jud_utama()
-            jud_sub("Saldo")
-            saldo(username)
-        elif answer == "7 | LOGOUT":
+            pesanan_anda(current_user)
+        elif pilih == "6 | SALDO":
+            saldo(current_user)
+        elif pilih == "7 | LOGOUT":
             pesan_berhasil("Logout Berhasil!")
             break
