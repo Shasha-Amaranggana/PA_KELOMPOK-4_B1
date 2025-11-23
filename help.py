@@ -45,4 +45,6 @@ def pesan_peringatan(pesan, warna, jumlah):
     print(warna + ("──" * jumlah).center(70) + Style.RESET_ALL)
     print("")
 
-
+def inp_enter():
+    print(("═"*70))
+    input("→ 「Enter untuk kembali」")

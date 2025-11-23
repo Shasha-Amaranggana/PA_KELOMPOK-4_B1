@@ -2,15 +2,15 @@ import inquirer
 import re
 from datetime import datetime
 from menu_bos import menu_boss
-from data import akun, save_akun_to_csv, current_seller
-from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan
+from data import akun, save_akun_to_csv
+from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_enter
 from menu_konsumen import menu_konsumen
 from menu_seller import menu_seller
 from colorama import Fore, Style, init
 init(autoreset=True)
 
 def login():
-    global current_seller
+    global current_user
     jud_utama()
     jud_sub("Silakan Login")
     username = input("Username: ".center(45))
@@ -27,22 +27,22 @@ def login():
                     pesan_peringatan(f"Akun '{username}' saat ini {user['status']}. Tidak bisa login!", Fore. RED, 30)
                     raise ValueError
                 pesan_berhasil(f"Login berhasil! Selamat datang, {username}!")
-                input("→ 「 Enter untuk lanjut 」")
+                inp_enter()
                 if user["role"] == "Bos":
                     menu_boss()
                 elif user["role"] == "Seller":
-                    current_seller = user
-                    menu_seller(current_seller)
-                    return
+                    current_user = user
+                    menu_seller(current_user)
                 elif user["role"] == "Konsumen":
-                    menu_konsumen(username)
-                input("→ 「 Enter untuk kembali 」")
+                    current_user = user
+                    menu_konsumen(current_user)
+                inp_enter()
                 return
         if not found:
             pesan_peringatan("Username atau Password salah atau akun belum terdaftar!", Fore.RED, 27)
             raise ValueError
     except ValueError:
-        input("→ 「 Enter untuk kembali 」")
+        inp_enter()
         return None
     
 def register():
@@ -63,7 +63,7 @@ def register():
     try:
         if username == "" or password == "" or email == "" or no_hp == "" or alamat == "":
             pesan_peringatan("Semua kolom harus diisi!", Fore.YELLOW, 12)
-            input("→ 「 Enter untuk kembali 」")
+            inp_enter()
             return None
         if not re.search(r"^[a-zA-Z0-9]{5,}$", username):
             raise ValueError
@@ -94,11 +94,11 @@ def register():
                 "saldo": 0}})
         save_akun_to_csv(akun)
         pesan_berhasil("Anda berhasil registrasi! Silakan login untuk melanjutkan.")
-        input("→ 「 Enter untuk kembali 」")
+        inp_enter()
         return True
     except ValueError:
         pesan_peringatan("Pastikan data yang diinput sesuai syarat!", Fore.YELLOW, 12)       
-        input("→「 Enter untuk kembali 」")
+        inp_enter()
         return None
 
 while True:
