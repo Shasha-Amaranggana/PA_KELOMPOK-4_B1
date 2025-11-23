@@ -1,11 +1,10 @@
 import inquirer
 import re
 from datetime import datetime
-from menu_bos import menu_boss
+from menu import menu_boss, menu_seller
 from data import akun, save_akun_to_csv
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_enter
 from menu_konsumen import menu_konsumen
-from menu_seller import menu_seller
 from colorama import Fore, Style, init
 init(autoreset=True)
 
