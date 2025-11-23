@@ -59,7 +59,8 @@ def keranjang_belanja():
                 choices=[
                     "1. Lihat Keranjang Belanja",
                     "2. Edit Keranjang Belanja",
-                    "3. Kembali"])]
+                    "3. Pesan Sekarang",
+                    "4. Kembali"])]
 
         answer = inquirer.prompt(questions)["menu"]
 
@@ -69,7 +70,10 @@ def keranjang_belanja():
         elif answer == "2. Edit Keranjang Belanja":
             edit_keranjang()
 
-        elif answer == "3. Kembali":
+        elif answer == "3. Pesan Sekarang":
+            pesan_sekarang()
+
+        elif answer == "4. Kembali":
             break
 
 def belanja():
