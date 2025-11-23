@@ -43,7 +43,7 @@ def lihat_produk():
         answer = inquirer.prompt(questions)["menu"]
 
         if answer == "1. Belanja":
-            pesanan_anda()
+            belanja()
         elif answer == "2. Kembali":
             break
 def keranjang_belanja():
@@ -59,7 +59,8 @@ def keranjang_belanja():
                 choices=[
                     "1. Lihat Keranjang Belanja",
                     "2. Edit Keranjang Belanja",
-                    "3. Kembali"])]
+                    "3. Pesan Sekarang",
+                    "4. Kembali"])]
 
         answer = inquirer.prompt(questions)["menu"]
 
@@ -69,10 +70,13 @@ def keranjang_belanja():
         elif answer == "2. Edit Keranjang Belanja":
             edit_keranjang()
 
-        elif answer == "3. Kembali":
+        elif answer == "3. Pesan Sekarang":
+            pesan_sekarang()
+
+        elif answer == "4. Kembali":
             break
 
-def pesanan_anda():
+def belanja():
 
     while True:
         jud_utama()
@@ -98,7 +102,7 @@ def pesanan_anda():
         elif answer == "3. Kembali":
             break
 
-def riwayat():
+def pesanan_anda():
     while True:
         jud_utama()
         jud_sub("Riwayat")
@@ -133,16 +137,16 @@ def saldo():
                 "menu",
                 message="Pilih menu:",
                 choices=[
-                    "1. Saldo anda",
-                    "2. Top up",
+                    "1. Saldo Anda",
+                    "2. Top Up",
                     "3. Kembali"])]
 
         answer = inquirer.prompt(questions)["menu"]
 
-        if answer == "1. Saldo anda":
+        if answer == "1. Saldo Anda":
             cek_saldo()
 
-        elif answer == "2. Top up":
+        elif answer == "2. Top Up":
             top_up()
 
         elif answer == "3. Kembali":
