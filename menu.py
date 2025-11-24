@@ -3,13 +3,12 @@ import re
 import inquirer
 from prettytable import PrettyTable
 from datetime import datetime
-from data import akun, produk_list, save_produk_to_csv, save_akun_to_csv
+from data import akun, produk_list, keranjang, pembelian_list, save_produk_to_csv, save_akun_to_csv
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_no, inp_enter
 from colorama import Fore, Style, init
 init(autoreset=True)
 
 pesanan_list = []
-
 
 # TAMPILAN MENU
 # ════════════════════════════════════════════════════
@@ -691,8 +690,6 @@ def menu_pemesanan():
             jud_utama()
             jud_sub("Daftar Pemesanan")
             lihat_pemesanan()
-            print("")
-            inp_enter()
         elif pilihan == "2 │ HAPUS PEMESANAN":
             jud_utama()
             jud_sub("Hapus Pemesanan")
@@ -703,26 +700,32 @@ def menu_pemesanan():
             break
 
 def lihat_pemesanan():
-    global pesanan_list
-    if len(pesanan_list) == 0:
-        pesan_peringatan("Daftar pemesanan masih kosong.", Fore.YELLOW, 12)
+    global pembelian_list
+    if len(pembelian_list) == 0:
+        pesan_peringatan("Daftar pemesanan masih kosong atau semua sudah diterima.", Fore.YELLOW, 12)
         return
-    else:
-        table = PrettyTable()
-        table.field_names = ["NO", " ID_U ", " ID_P ", " NAMA USER ", " PRODUK ", "TOTAL HARGA", " STATUS "]
+    table = PrettyTable()
+    table.field_names = ["ID", "ID U", "ID P", "VARIAN", "KEMASAN", "JUMLAH", "TOTAL HARGA", "STATUS", "TANGGAL"]
+    for psn in pembelian_list:
+        # Lewati yang sudah diterima
+        if psn.get("status") == "Diterima":
+            continue
+        table.add_row([
+            psn.get("id_order", ""),
+            psn.get("id_user", ""),
+            psn.get("id_produk", ""),
+            psn.get("varian", ""),
+            psn.get("kemasan", ""),
+            psn.get("jumlah", 0),
+            f"Rp{psn.get('total_harga', 0)}",
+            psn.get("status", ""),
+            psn.get("tanggal_pesan", "")])
 
-        for psn in pesanan_list:
-            table.add_row([
-                psn["id_pesanan"],
-                psn["nama_user"],
-                psn["produk"],
-                psn["jumlah"],
-                f"Rp{psn['total_harga']}",
-                psn.get("status_pesanan", "")])
-        for field in table.field_names:
-            table.align[field] = "c"
-        table.align["Produk"] = "l"
-        print(table)
+    for field in table.field_names:
+        table.align[field] = "c"
+    table_str = table.get_string()
+    for line in table_str.split("\n"):
+        print(line.center(70))
     inp_enter()
 
 def hapus_pemesanan():

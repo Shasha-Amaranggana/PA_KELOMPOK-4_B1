@@ -1,5 +1,5 @@
 id,varian,kemasan,harga,stok,status
-C1,Caramel,Small,6000,20,Tersedia
+C1,Caramel,Small,5000,50,Tersedia
 C2,Caramel,Medium,10000,25,Tersedia
 C3,Caramel,Large,18000,0,Habis
 B1,Blueberry,Small,5000,35,Tersedia
