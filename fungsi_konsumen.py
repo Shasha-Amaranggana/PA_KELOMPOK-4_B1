@@ -29,8 +29,6 @@ def menu_akun(current_user):
     while True:
         jud_utama()
         jud_sub("Menu Akun")
-        # import tamp_kons here to avoid circular import at module load time
-        from menu_konsumen import tamp_kons
         pilih = tamp_kons("2.1")
         if pilih == "1 │ LIHAT DATA DIRI":
             jud_utama()
@@ -240,6 +238,47 @@ def belanja():
 
         elif answer == "3. Kembali":
             break
+
+def tambah_keranjang(username):
+    init_keranjang_user(username)
+    jud_utama()
+    jud_sub("Tambah ke Keranjang")
+    daftar_produk()
+
+    # Input ID produk
+    pid = input("\nMasukkan ID Produk yang ingin dibeli: ").strip()
+
+    if pid not in keranjang_user:
+        pesan_peringatan("ID PRODUK TIDAK DITEMUKAN!", Fore.YELLOW, 30)
+        inp_enter()
+        return
+
+    produk = keranjang_user[pid]
+
+    try:
+        jumlah = int(input(f"Masukkan jumlah {produk['nm']} yang ingin dibeli: ").strip())
+        if jumlah <= 0:
+            pesan_peringatan("Jumlah tidak boleh nol atau negatif!", Fore.YELLOW, 30)
+            inp_enter()
+            return
+    except ValueError:
+        pesan_peringatan("Input jumlah harus berupa angka!", Fore.YELLOW, 30)
+        inp_enter()
+        return
+
+    # Jika produk sudah ada tambahkan jumlahnya
+    if pid in keranjang_user[username]:
+        keranjang_user[username][pid]["jumlah"] += jumlah
+    else:
+        keranjang_user[username][pid] = {
+            "nm": produk["nm"],
+            "sz": produk["sz"],
+            "pz": produk["pz"],
+            "jumlah": jumlah}
+
+    pesan_berhasil("Produk berhasil ditambahkan ke keranjang!")
+    inp_enter()
+
 
 
 # MENU RIWAYAT
