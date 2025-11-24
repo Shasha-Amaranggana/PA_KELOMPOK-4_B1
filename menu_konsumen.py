@@ -20,7 +20,7 @@ def menu_konsumen(current_user):
         elif pilih == "2 | LIHAT PRODUK":
             jud_utama()
             jud_sub("Daftar Produk")
-            lihat_produk()
+            lihat_produk(current_user)
         elif pilih == "3 | KERANJANG BELANJA":
             jud_utama()
             jud_sub("Keranjang Belanja")
