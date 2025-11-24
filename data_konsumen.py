@@ -4,9 +4,9 @@ keranjang_user = {
         "3": { "nm": "popcorn3", "sz": "S", "pz": 15000, "jumlah": 1 }}}
 
 
-def init_keranjang_user(username):
-    if username not in keranjang_user:
-        keranjang_user[username] = {}
+def init_keranjang_user(current_user):
+    if current_user not in keranjang_user:
+        keranjang_user[current_user] = {}
 
 pesanan = {}
 

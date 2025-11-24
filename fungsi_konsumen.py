@@ -148,9 +148,9 @@ def keranjang_belanja():
         elif answer == "4. Kembali":
             break
 
-def lihat_keranjang(username):
-    init_keranjang_user(username)
-    keranjang = keranjang_user[username]
+def lihat_keranjang(current_user):
+    init_keranjang_user(current_user)
+    keranjang = keranjang_user[current_user]
 
     if not keranjang:
         pesan_peringatan("KERANJANG MASIH KOSONG", Fore.YELLOW, 30)
@@ -184,9 +184,9 @@ def lihat_keranjang(username):
         print(line.center(70))
     print("\n")
 
-def edit_keranjang(username, keranjang_user):
+def edit_keranjang(current_user, keranjang_user):
     
-    if username not in keranjang_user or not keranjang_user[username]:
+    if current_user not in keranjang_user or not keranjang_user[current_user]:
         print("Keranjang Anda masih kosong.")
         return
     print("=== Edit Keranjang Belanja ===")
@@ -194,18 +194,18 @@ def edit_keranjang(username, keranjang_user):
     table = PrettyTable()
     table.field_names = ["ID", "Nama Produk", "Size", "Harga", "Jumlah", "Total"]
 
-    for pid, item in keranjang_user[username].items():
+    for pid, item in keranjang_user[current_user].items():
         total = item["harga"] * item["jumlah"]
         table.add_row([pid, item["nama"], item["size"], item["harga"], item["jumlah"], total])
     print(table)
 
     hapus_id = input("\nMasukkan ID produk yang ingin dihapus: ")
 
-    if hapus_id not in keranjang_user[username]:
+    if hapus_id not in keranjang_user[current_user]:
         print(" ID tidak ditemukan di keranjang.")
         return
 
-    del keranjang_user[username][hapus_id]
+    del keranjang_user[current_user][hapus_id]
     print("Barang berhasil dihapus dari keranjang")
 
 
@@ -239,8 +239,8 @@ def belanja():
         elif answer == "3. Kembali":
             break
 
-def tambah_keranjang(username):
-    init_keranjang_user(username)
+def tambah_keranjang(current_user):
+    init_keranjang_user(current_user)
     jud_utama()
     jud_sub("Tambah ke Keranjang")
     daftar_produk()
@@ -267,10 +267,10 @@ def tambah_keranjang(username):
         return
 
     # Jika produk sudah ada tambahkan jumlahnya
-    if pid in keranjang_user[username]:
-        keranjang_user[username][pid]["jumlah"] += jumlah
+    if pid in keranjang_user[current_user]:
+        keranjang_user[current_user][pid]["jumlah"] += jumlah
     else:
-        keranjang_user[username][pid] = {
+        keranjang_user[current_user][pid] = {
             "nm": produk["nm"],
             "sz": produk["sz"],
             "pz": produk["pz"],
