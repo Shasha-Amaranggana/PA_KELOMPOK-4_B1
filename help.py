@@ -18,12 +18,6 @@ def jud_sub(judul):
     print(("═"*50).center(70))
     print("")
 
-def inp_menu():
-    print("")
-    print(("═"*50).center(70))
-    menu = input("╰┈➤  Pilih menu: ")
-    return menu
-
 def inp_no():
     print("")
     print(("═"*50).center(70))

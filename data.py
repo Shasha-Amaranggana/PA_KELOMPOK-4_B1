@@ -58,8 +58,7 @@ def load_akun_from_csv() -> dict:
 
 try:
     akun = load_akun_from_csv()
-    current_seller = None
-    current_konsumen = None
+    current_user = None
 except Exception:
     akun = dict(_default_akun)
 
@@ -121,3 +120,147 @@ try:
     produk_list = load_produk_from_csv()
 except Exception:
     produk_list = list(_default_produk)
+
+
+# PEMBELIAN
+# ════════════════════════════════════════════════════
+
+CSV_PEMBELIAN_FILE = "pembelian.csv"
+CSV_PEMBELIAN_FIELDS = ["id_order","id_produk","varian","kemasan","harga","id_user","tanggal_pesan","tanggal_dikirim","tanggal_sampai","jumlah","total_harga","status"]
+
+_default_pembelian = [
+    {"id_order": "O1", "id_produk": "C1", "varian": "Caramel", "kemasan": "Small", "harga": 5000, "id_user": "U_K1", "tanggal_pesan": "2025-10-10", "tanggal_dikirim": "", "tanggal_sampai": "", "jumlah": 2, "total_harga": 10000, "status": "Dipesan"}]
+    
+
+def save_pembelian_to_csv(pembelian_list: list) -> None:
+    with open(CSV_PEMBELIAN_FILE, "w", newline="", encoding="utf-8") as f:
+        fieldnames = ["id_order","id_produk","varian","kemasan","harga","id_user","tanggal_pesan","tanggal_dikirim","tanggal_sampai","jumlah","total_harga","status"]
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for pembelian in pembelian_list:
+            writer.writerow({
+                "id_order": pembelian.get("id_order", ""),
+                "id_produk": pembelian.get("id_produk", ""),
+                "varian": pembelian.get("varian", ""),
+                "kemasan": pembelian.get("kemasan", ""),
+                "harga": pembelian.get("harga", 0),
+                "id_user": pembelian.get("id_user", ""),
+                "tanggal_pesan": pembelian.get("tanggal_pesan", ""),
+                "tanggal_dikirim": pembelian.get("tanggal_dikirim", ""),
+                "tanggal_sampai": pembelian.get("tanggal_sampai", ""),
+                "jumlah": pembelian.get("jumlah", 0),
+                "total_harga": pembelian.get("total_harga", 0),
+                "status": pembelian.get("status", "")})
+            
+def load_pembelian_from_csv() -> list:
+    if os.path.exists(CSV_PEMBELIAN_FILE):
+        pembelian_list = []
+        with open(CSV_PEMBELIAN_FILE, "r", newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                if not row.get("id_order"):
+                    continue
+                pembelian_list.append({
+                    "id_order": row.get("id_order", ""),
+                    "id_produk": row.get("id_produk", ""),
+                    "varian": row.get("varian", ""),
+                    "kemasan": row.get("kemasan", ""),
+                    "harga": int(row.get("harga", 0)),
+                    "id_user": row.get("id_user", ""),
+                    "tanggal_pesan": row.get("tanggal_pesan", ""),
+                    "tanggal_dikirim": row.get("tanggal_dikirim", ""),
+                    "tanggal_sampai": row.get("tanggal_sampai", ""),
+                    "jumlah": int(row.get("jumlah", 0)),
+                    "total_harga": int(row.get("total_harga", 0)),
+                    "status": row.get("status", "")})
+        if pembelian_list:
+            return pembelian_list
+    save_pembelian_to_csv(_default_pembelian)
+    return list(_default_pembelian)
+
+try:
+    pembelian_list = load_pembelian_from_csv()
+except Exception:
+    pembelian_list = list(_default_pembelian)
+
+
+
+# KERANJANG
+# ════════════════════════════════════════════════════
+
+CSV_KERANJANG_FILE = "keranjang.csv"
+CSV_KERANJANG_FIELDS = ["id_user", "id_produk", "varian", "kemasan", "jumlah"]
+
+_default_keranjang = {}
+
+def save_keranjang_to_csv(keranjang) -> None:
+    rows_to_write = []
+    if isinstance(keranjang, dict):
+        for id_user, items in keranjang.items():
+            if not id_user:
+                continue
+            if isinstance(id_user, str) and id_user.strip().lower() == "none":
+                continue
+            if not isinstance(items, (list, tuple)):
+                continue
+            for item in items:
+                rows_to_write.append({
+                    "id_user": id_user,
+                    "id_produk": item.get("id_produk", ""),
+                    "varian": item.get("varian", ""),
+                    "kemasan": item.get("kemasan", ""),
+                    "jumlah": item.get("jumlah", 0)})
+    elif isinstance(keranjang, (list, tuple)):
+        for row in keranjang:
+            if not isinstance(row, dict):
+                continue
+            row_user = row.get("id_user")
+            if not row_user:
+                continue
+            if isinstance(row_user, str) and row_user.strip().lower() == "none":
+                continue
+            rows_to_write.append({
+                "id_user": row_user,
+                "id_produk": row.get("id_produk", ""),
+                "varian": row.get("varian", ""),
+                "kemasan": row.get("kemasan", ""),
+                "jumlah": row.get("jumlah", 0)})
+    else:
+        rows_to_write = []
+    with open(CSV_KERANJANG_FILE, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=CSV_KERANJANG_FIELDS)
+        writer.writeheader()
+        for row in rows_to_write:
+            writer.writerow(row)
+
+def load_keranjang_from_csv() -> dict:
+    if os.path.exists(CSV_KERANJANG_FILE):
+        keranjang_dict = {}
+        with open(CSV_KERANJANG_FILE, "r", newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                user = row.get("id_user")
+                if not user:
+                    continue
+                if user not in keranjang_dict:
+                    keranjang_dict[user] = []
+                try:
+                    jumlah_val = int(row.get("jumlah", 0))
+                except Exception:
+                    jumlah_val = 0
+                keranjang_dict[user].append({
+                    "id_produk": row.get("id_produk", ""),
+                    "varian": row.get("varian", ""),
+                    "kemasan": row.get("kemasan", ""),
+                    "jumlah": jumlah_val,})
+
+        if keranjang_dict:
+            return keranjang_dict
+    save_keranjang_to_csv(_default_keranjang)
+    return dict(_default_keranjang)
+
+try:
+    keranjang = load_keranjang_from_csv()
+    keranjang_user = None
+except Exception:
+    keranjang = dict(_default_keranjang)
