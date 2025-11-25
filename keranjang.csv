@@ -1,2 +1,4 @@
-id_user,id_produk,varian,kemasan,jumlah
-U_K1,C1,Caramel,Small,2
+id_user,id_produk,varian,kemasan,harga
+U_B1,C1,Caramel,Medium,10000
+U_K1,B3,Blueberry,Large,18000
+U_K1,M1,Matcha,Small,5000

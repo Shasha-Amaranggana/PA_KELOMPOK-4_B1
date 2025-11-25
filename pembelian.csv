@@ -1,1 +1,5 @@
-id_order,id_produk,varian,kemasan,harga,id_user,tanggal_pesan,tanggal_dikirim,tanggal_sampai,jumlah,total_harga,status
+id_order,id_produk,varian,kemasan,harga,id_user,tanggal_pesan,tanggal_dikirim,tanggal_sampai,jumlah,total_harga,status,batal_oleh,alasan
+O1,C1,Caramel,Small,5000,U_K1,2025-10-10,,,2,10000,Dipesan,,
+O2,C2,Caramel,Small,10000,U_K1,2025-11-24,,,1,10000,Dipesan,,
+O3,C1,Caramel,Small,5000,U_K1,2025-11-24,,,2,10000,Dipesan,,
+O20251125231019,C1,Caramel,Small,5000,U_K1,2025-11-25,,,1,5000,Dipesan,,
