@@ -2,7 +2,7 @@ import inquirer
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_enter
 from menu import daftar_produk
 from prettytable import PrettyTable
-from data import akun, save_akun_to_csv, keranjang, produk_list, save_produk_to_csv, load_keranjang_from_csv, save_keranjang_to_csv, current_user, save_pembelian_to_csv, load_pembelian_from_csv
+from data import akun, save_akun_to_csv, keranjang, produk_list, save_keranjang_to_csv, current_user, save_pembelian_to_csv, pembelian, save_produk_to_csv
 from colorama import Fore, Style, init
 from datetime import datetime
 
@@ -11,10 +11,10 @@ init(autoreset=True)
 def tamp_kons(jenis):
     message = "Silakan pilih menu"
     daftar_menu = {
-        "1": ['1 │ AKUN'.center(25), '2 | LIHAT PRODUK'.center(33), '3 | KERANJANG BELANJA'.center(39),  '4 | BELANJA'.center(29), '5 | RIWAYAT'.center(29), '6 | SALDO'.center(27), '7 | LOGOUT'.center(27)],
+        "1": ['1 │ AKUN'.center(25), '2 | LIHAT PRODUK'.center(33), '3 | KERANJANG BELANJA'.center(39),  '4 | PESANAN'.center(29), '5 | RIWAYAT BELANJA'.center(29), '6 | SALDO'.center(27), '7 | LOGOUT'.center(27)],
         "2.1" : ['1 │ LIHAT DATA DIRI'.center(37), '2 │ EDIT DATA DIRI'.center(36), '3 │ KEMBALI'.center(29)],
         "2.2" : ['1 │ TAMBAH KE KERANJANG'.center(41), '2 │ PESAN SEKARANG'.center(35), '3 │ KEMBALI'.center(29)],
-        "2.3" : ['1 │ HAPUS PRODUK DARI KERANJANG'.center(29), '2 │ PESAN SEKARANG'.center(29), '3 │ KEMBALI'.center(29)],
+        "2.3" : ['1 │ HAPUS PRODUK DARI KERANJANG'.center(50), '2 │ PESAN SEKARANG'.center(35), '3 │ KEMBALI'.center(29)],
         "3.1" : ['1 │ TAMBAH KE KERANJANG'.center(33), '2 │ PESAN SEKARANG'.center(33), '3 │ KEMBALI'.center(29)],
         "4.1" : ['1 │ TOP UP'.center(28), '2 │ KEMBALI'.center(29)]}
     choices = daftar_menu[jenis]
@@ -119,6 +119,7 @@ def lihat_produk(current_user):
             break
 
 def tambah_keranjang(current_user):
+    id_user = current_user.get("id", "")
     while True:
         jud_utama()
         jud_sub("Tambah ke Keranjang")
@@ -126,19 +127,23 @@ def tambah_keranjang(current_user):
             inquirer.List(
                 "id_produk",
                 message="Pilih produk yang akan ditambahkan",
-                choices=[f"{p['id']} │ {p['varian']} ({p['kemasan']}) │ {p['harga']}" for p in produk_list])]
+                choices=[f"{p['id']} │ {p['varian']} ({p['kemasan']}) │ Rp{p['harga']}" for p in produk_list])]
         jawaban = inquirer.prompt(pilihan_id)
         if jawaban is None:
             return
         teks = jawaban["id_produk"]
         id_terpilih = teks.split(" │ ")[0].strip()
+
         produk = next((p for p in produk_list if p["id"] == id_terpilih), None)
-        
         if not produk:
             pesan_peringatan("Produk tidak ditemukan!", Fore.RED, 12)       
             inp_enter()
             return
-        
+        if int(produk["stok"]) <= 0:
+            pesan_peringatan("Stok produk telah habis! Tidak dapat dimasukkan ke keranjang.", Fore.RED, 12)
+            inp_enter()
+            return
+
         print(("═"*50).center(70))
         print("")
         table = PrettyTable()
@@ -153,92 +158,69 @@ def tambah_keranjang(current_user):
         table_str = table.get_string()
         for line in table_str.split("\n"):
             print(line.center(70))
-        
         print("")
         print(("═"*50).center(70))
 
-        try:
-            jumlah = int(input("╰┈➤ Masukkan jumlah yang ingin ditambahkan ke keranjang: ").strip())
-            if jumlah <= 0:
-                pesan_peringatan("Jumlah produk tidak boleh nol atau negatif!", Fore.YELLOW, 20)
-                inp_enter()
-                continue
-        except ValueError:
-            pesan_peringatan("Input tidak valid! Silakan masukkan angka.", Fore.YELLOW, 30)
-            inp_enter()
-            continue
         konfirmasi = [
             inquirer.List(
                 "konfirm",
-                message=f"Konfirmasi ingin menambahkan {jumlah} {produk['varian']} ({produk['kemasan']}) ke keranjang?",
+                message=f"Konfirmasi ingin memasukkan {produk['varian']} ({produk['kemasan']}) ke keranjang?",
                 choices=["            1 │ Ya", "            2 │ Tidak"])]
         jawab_konfirmasi = inquirer.prompt(konfirmasi)
-        if jawab_konfirmasi and jawab_konfirmasi["konfirm"] == "            1 │ Ya":
-            keranjang = load_keranjang_from_csv()
-            if isinstance(current_user, dict):
-                id_user = current_user.get("id", "")
-            else:
-                id_user = str(current_user)
-            id_produk = produk["id"]
-            if id_user not in keranjang or not isinstance(keranjang[id_user], (list, tuple)):
-                if id_user in keranjang and isinstance(keranjang[id_user], dict):
-                    converted = []
-                    for pid, it in keranjang[id_user].items():
-                        try:
-                            jumlah_val = int(it.get("jumlah", 0))
-                        except Exception:
-                            jumlah_val = 0
-                        converted.append({
-                            "id_produk": pid,
-                            "varian": it.get("varian") or it.get("nm") or it.get("nama", ""),
-                            "kemasan": it.get("kemasan") or it.get("sz") or it.get("size", ""),
-                            "jumlah": jumlah_val
-                        })
-                    keranjang[id_user] = converted
-                else:
-                    keranjang[id_user] = []
+        if not jawab_konfirmasi:
+            return
+        if jawab_konfirmasi["konfirm"] == "            1 │ Ya":
+            user_items = keranjang.get(id_user, [])
 
-            user_items = keranjang[id_user]
-            existing = next((r for r in user_items if r.get("id_produk") == id_produk), None)
+            existing = next((item for item in user_items if item["id_produk"] == id_terpilih), None)
             if existing:
-                try:
-                    existing["jumlah"] = int(existing.get("jumlah", 0)) + jumlah
-                except Exception:
-                    existing["jumlah"] = jumlah
-            else:
-                user_items.append({
-                    "id_produk": id_produk,
-                    "varian": produk.get("varian", ""),
-                    "kemasan": produk.get("kemasan", ""),
-                    "jumlah": jumlah})
+                pesan_peringatan("Produk sudah ada di keranjang anda!", Fore.YELLOW, 12)
+                inp_enter()
+                return
+
+            user_items.append({
+                "id_produk": produk["id"],
+                "varian": produk["varian"],
+                "kemasan": produk["kemasan"],
+                "harga": int(produk["harga"])})
+
             save_keranjang_to_csv(keranjang)
             pesan_berhasil("Produk berhasil ditambahkan ke keranjang anda!")
+            inp_enter()
+            return
+
         else:
-            pesan_peringatan("Produk batal ditambahkan!", Fore.RED, 12)
-        inp_enter()
-        break
+            pesan_peringatan("Produk batal dimasukkan!", Fore.RED, 12)
+            inp_enter()
+            return
 
 def pesan(current_user):
+    id_user = current_user.get("id", "")
+    saldo_user = int(current_user.get("saldo", 0))
     while True:
         jud_utama()
-        jud_sub("Pesan Produk Sekarang")
+        jud_sub("Pesan Produk")
         pilihan_id = [
             inquirer.List(
                 "id_produk",
                 message="Pilih produk yang akan dipesan",
-                choices=[f"{p['id']} │ {p['varian']} ({p['kemasan']}) │ {p['harga']}" for p in produk_list])]
+                choices=[f"{p['id']} │ {p['varian']} ({p['kemasan']}) │ Rp{p['harga']}" for p in produk_list])]
         jawaban = inquirer.prompt(pilihan_id)
         if jawaban is None:
             return
         teks = jawaban["id_produk"]
         id_terpilih = teks.split(" │ ")[0].strip()
+
         produk = next((p for p in produk_list if p["id"] == id_terpilih), None)
-        
         if not produk:
             pesan_peringatan("Produk tidak ditemukan!", Fore.RED, 12)       
             inp_enter()
             return
-        
+        if int(produk["stok"]) <= 0:
+            pesan_peringatan("Stok produk telah habis! Tidak dapat dipesan", Fore.RED, 12)
+            inp_enter()
+            return
+
         print(("═"*50).center(70))
         print("")
         table = PrettyTable()
@@ -253,75 +235,74 @@ def pesan(current_user):
         table_str = table.get_string()
         for line in table_str.split("\n"):
             print(line.center(70))
-        
         print("")
         print(("═"*50).center(70))
 
-        try:
-            jumlah = int(input("╰┈➤ Masukkan jumlah yang ingin dipesan: ").strip())
-            if jumlah <= 0:
-                pesan_peringatan("Jumlah produk tidak boleh nol atau negatif!", Fore.YELLOW, 20)
-                inp_enter()
-                continue
-        except ValueError:
-            pesan_peringatan("Input tidak valid! Silakan masukkan angka.", Fore.YELLOW, 30)
-            inp_enter()
-            continue
         konfirmasi = [
             inquirer.List(
                 "konfirm",
-                message=f"Konfirmasi ingin memesan {jumlah} {produk['varian']} ({produk['kemasan']})?",
+                message=f"Konfirmasi ingin memesan {produk['varian']} ({produk['kemasan']})?",
                 choices=["            1 │ Ya", "            2 │ Tidak"])]
         jawab_konfirmasi = inquirer.prompt(konfirmasi)
-        if jawab_konfirmasi and jawab_konfirmasi["konfirm"] == "            1 │ Ya":
-            if jawab_konfirmasi and jawab_konfirmasi["konfirm"] == "            1 │ Ya":
-                try:
-                    pembelian_list = load_pembelian_from_csv()
-                except Exception:
-                    pembelian_list = []
-
-                existing_ids = [p.get("id_order", "") for p in pembelian_list if p.get("id_order")]
-                max_num = 0
-                for oid in existing_ids:
-                    try:
-                        num = int(oid.lstrip('O'))
-                        if num > max_num:
-                            max_num = num
-                    except Exception:
-                        continue
-                new_id = f"O{max_num + 1}"
-
-                if isinstance(current_user, dict):
-                    id_user = current_user.get("id", "")
+        if not jawab_konfirmasi:
+            return
+        if jawab_konfirmasi["konfirm"] == "            1 │ Ya":
+            inp = input("Masukkan jumlah produk yang ingin dipesan (ketik 'kembali' untuk kembali): ").strip()
+            if inp == "kembali":
+                return None
+            try:
+                jumlah = int(inp)
+                if jumlah == 0 or jumlah < 0:
+                    pesan_peringatan("Jumlah top up tidak boleh nol atau negatif!", Fore.YELLOW, 20)
+                    inp_enter()
+                    continue
+                elif jumlah > int(produk["stok"]) :
+                    pesan_peringatan("Jumlah produk melebihi stok yang tersedia!", Fore.YELLOW, 30)
+                    inp_enter()
+                    continue
                 else:
-                    id_user = str(current_user)
+                    total_harga = int(produk["harga"]) * jumlah
+                    if saldo_user < total_harga:
+                        pesan_peringatan("Saldo anda tidak mencukupi untuk membeli produk ini!", Fore.RED, 12)
+                        inp_enter()
+                        return
+            except ValueError:
+                pesan_peringatan("Input tidak valid! Silakan masukkan angka.", Fore.YELLOW, 30)
+                inp_enter()
 
-                harga = int(produk.get("harga", 0))
-                total = harga * jumlah
-                order = {
-                    "id_order": new_id,
-                    "id_produk": produk.get("id", ""),
-                    "varian": produk.get("varian", ""),
-                    "kemasan": produk.get("kemasan", ""),
-                    "harga": harga,
-                    "id_user": id_user,
-                    "tanggal_pesan": datetime.now().strftime("%Y-%m-%d"),
-                    "tanggal_dikirim": "",
-                    "tanggal_sampai": "",
-                    "jumlah": jumlah,
-                    "total_harga": total,
-                    "status": "Dipesan"}
+            now = datetime.now().strftime("%Y%m%d%H%M%S")
+            id_order = f"O{now}"
 
-                pembelian_list.append(order)
-                try:
-                    save_pembelian_to_csv(pembelian_list)
-                    pesan_berhasil(f"Pesanan berhasil dibuat dengan ID {new_id}!")
-                except Exception as e:
-                    pesan_peringatan(f"Gagal menyimpan pembelian: {e}", Fore.RED, 30)
+            pembelian[id_user].append({
+                "id_order": id_order,
+                "id_produk": produk["id"],
+                "varian": produk["varian"],
+                "kemasan": produk["kemasan"],
+                "harga": int(produk["harga"]),
+                "id_user": id_user,
+                "tanggal_pesan": datetime.now().strftime("%Y-%m-%d"),
+                "tanggal_dikirim": "",
+                "tanggal_sampai": "",
+                "jumlah": jumlah,
+                "total_harga": total_harga,
+                "status": "Dipesan",
+                "batal_oleh": "",
+                "alasan": ""})
+
+            current_user["saldo"] = saldo_user - total_harga
+            produk["stok"] = int(produk["stok"]) - jumlah
+
+            save_pembelian_to_csv(pembelian)
+            save_produk_to_csv(produk_list)
+            pesan_berhasil("Produk berhasil dipesan!")
+            inp_enter()
+            return
+
         else:
-            pesan_peringatan("Produk batal ditambahkan!", Fore.RED, 12)
-        inp_enter()
-        break
+            pesan_peringatan("Produk batal dipesan!", Fore.RED, 12)
+            inp_enter()
+            return
+
 
 # MENU KERANJANG BELANJA
 # ════════════════════════════════════════════════════
@@ -341,77 +322,97 @@ def keranjang_belanja(current_user):
             break
 
 def daftar_keranjang(current_user):
-    try:
-        if isinstance(current_user, dict):
-            id_user = current_user.get("id", "")
-        else:
-            id_user = str(current_user)
-    except Exception:
-        id_user = str(current_user)
+    id_user = current_user.get("id", "")
+    user_items = keranjang.get(id_user, [])
 
-    try:
-        keranjang_dict = load_keranjang_from_csv()
-    except Exception:
-        try:
-            keranjang_dict = keranjang
-        except Exception:
-            keranjang_dict = {}
-
-    user_items = keranjang_dict.get(id_user) if isinstance(keranjang_dict, dict) else None
     if not user_items:
         pesan_peringatan("Daftar keranjang masih kosong.", Fore.YELLOW, 12)
         return
-
+    
     table = PrettyTable()
-    table.field_names = ["NO", "ID", "VARIAN", "UKURAN", "HARGA (per)", "JUMLAH", "TOTAL"]
-
+    table.field_names = ["NO", "ID", "VARIAN", "UKURAN", "HARGA"]
     for idx, item in enumerate(user_items, start=1):
-        pid = item.get("id_produk") or item.get("id") or ""
-        varian = item.get("varian") or item.get("nm") or ""
-        kemasan = item.get("kemasan") or item.get("sz") or ""
-        try:
-            jumlah = int(item.get("jumlah", 0))
-        except Exception:
-            jumlah = 0
-        harga = 0
-        prod = next((p for p in produk_list if p.get("id") == pid), None)
-        if prod:
-            try:
-                harga = int(prod.get("harga", 0))
-            except Exception:
-                harga = 0
-        total = harga * jumlah
+        pid = item.get("id_produk")
+        varian = item.get("varian")
+        kemasan = item.get("kemasan")
+        harga = int(item.get("harga", 0))
         table.add_row([
             idx,
             pid,
             varian,
             kemasan,
-            f"Rp{harga:,}",
-            jumlah,
-            f"Rp{total:,}" ])
+            f"Rp{harga:,}"])
 
     table.align["NO"] = "l"
     table.align["ID"] = "l"
     table.align["VARIAN"] = "l"
     table.align["UKURAN"] = "l"
-    table.align["HARGA (per)"] = "r"
-    table.align["JUMLAH"] = "c"
-    table.align["TOTAL"] = "r"
+    table.align["HARGA"] = "r"
 
     table_str = table.get_string()
     for line in table_str.split("\n"):
         print(line.center(70))
 
 def hapus_keranjang(current_user):
-    print("")
+    id_user = current_user.get("id", "")
+    user_items = keranjang.get(id_user, [])
+    while True:
+        jud_utama()
+        jud_sub("Hapus Produk Dari Keranjang")
+        pilihan_id = [
+            inquirer.List(
+                "id_keranjang",
+                message="Pilih produk yang mau dihapus",
+                choices=[f"{p['id_produk']} │ {p['varian']} ({p['kemasan']}) │ {p['harga']}" for p in user_items])]
+        jawaban = inquirer.prompt(pilihan_id)
+        if jawaban is None:
+            return
+        teks = jawaban["id_keranjang"]
+        id_terpilih = teks.split(" │ ")[0].strip()
+
+        produk = next((p for p in user_items if p["id_produk"] == id_terpilih), None)
+        if not produk:
+            pesan_peringatan("Produk tidak ditemukan!", Fore.RED, 12)       
+            inp_enter()
+            return
+
+        print(("═"*50).center(70))
+        print("")
+        table = PrettyTable()
+        table.field_names = ["    NAMA    ", "         DATA         "]
+        table.add_row(["ID", produk["id_produk"]])
+        table.add_row(["Varian", produk["varian"]])
+        table.add_row(["Kemasan", produk["kemasan"]])
+        table.add_row(["Harga", f"Rp{produk['harga']}"])
+        table.align["    NAMA    "] = "l"
+        table.align["         DATA         "] = "l"
+        table_str = table.get_string()
+        for line in table_str.split("\n"):
+            print(line.center(70))
+        print("")
+        print(("═"*50).center(70))
+
+        konfirmasi = [
+            inquirer.List(
+                "konfirm",
+                message=f"Konfirmasi ingin menghapus {produk['varian']} ({produk['kemasan']}) dari keranjang?",
+                choices=["            1 │ Ya", "            2 │ Tidak"])]
+        jawab_konfirmasi = inquirer.prompt(konfirmasi)
+        if not jawab_konfirmasi:
+            return
+        if jawab_konfirmasi["konfirm"] == "            1 │ Ya":
+            user_items.remove(produk)
+            save_keranjang_to_csv(keranjang)
+            pesan_berhasil("Produk berhasil dihapus dari keranjang anda!")
+            inp_enter()
+            return
+        else:
+            pesan_peringatan("Produk batal dihapus!", Fore.RED, 12)
+            inp_enter()
+            return
 
 
-
-# MENU BELANJA
-# ════════════════════════════════════════════════════
-
-
-# MENU RIWAYAT
+# MENU PESANAN
 # ════════════════════════════════════════════════════
 def pesanan_anda():
     while True:
@@ -437,6 +438,11 @@ def pesanan_anda():
 
         elif answer == "3. Kembali":
             break
+
+
+# MENU RIWAYAT BELANJA
+# ════════════════════════════════════════════════════
+
 
 
 # MENU SALDO

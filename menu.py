@@ -3,7 +3,7 @@ import re
 import inquirer
 from prettytable import PrettyTable
 from datetime import datetime
-from data import akun, produk_list, keranjang, pembelian_list, save_produk_to_csv, save_akun_to_csv
+from data import akun, produk_list, keranjang, pembelian, save_produk_to_csv, save_akun_to_csv
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_no, inp_enter
 from colorama import Fore, Style, init
 init(autoreset=True)
@@ -700,13 +700,13 @@ def menu_pemesanan():
             break
 
 def lihat_pemesanan():
-    global pembelian_list
-    if len(pembelian_list) == 0:
+    global pembelian
+    if len(pembelian) == 0:
         pesan_peringatan("Daftar pemesanan masih kosong atau semua sudah diterima.", Fore.YELLOW, 12)
         return
     table = PrettyTable()
     table.field_names = ["ID", "ID U", "ID P", "VARIAN", "KEMASAN", "JUMLAH", "TOTAL HARGA", "STATUS", "TANGGAL"]
-    for psn in pembelian_list:
+    for psn in pembelian:
         # Lewati yang sudah diterima
         if psn.get("status") == "Diterima":
             continue

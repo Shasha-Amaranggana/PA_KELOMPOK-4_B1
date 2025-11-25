@@ -25,10 +25,11 @@ def menu_konsumen(current_user):
             jud_utama()
             jud_sub("Keranjang Belanja")
             keranjang_belanja(current_user)
-        elif pilih == "4 | BELANJA":
+        elif pilih == "4 | PESANAN":
             jud_utama()
-            jud_sub("Belanja")
-        elif pilih == "5 | RIWAYAT":
+            jud_sub("Pesanan Anda")
+            pesanan(current_user)
+        elif pilih == "5 | RIWAYAT BELANJA":
             jud_utama()
             jud_sub("Riwayat Belanja")
             pesanan_anda(current_user)
