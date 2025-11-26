@@ -130,8 +130,8 @@ def daftar_seller():
             id_key,
             user["us"],
             user["role"],
-            user["status"],
-            user["tgl"]])
+            user["status_user"],
+            user["tanggal_daftar"]])
     table.align["NO", " ID ", "  USERNAME  ", " ROLE ", " STATUS ", "TERDAFTAR"] ="l"
     table_str = table.get_string()
     for line in table_str.split("\n"):
@@ -174,12 +174,12 @@ def regist_seller():
         new_id = f"U_S{last_num + 1}"
         akun.update({
             new_id: {
-                "id": new_id,
+                "id_user": new_id,
                 "us": username,
                 "pw": password,
                 "role": "Seller",
-                "status": "Aktif",
-                "tgl": datetime.now().strftime("%Y-%m-%d"),
+                "status_user": "Aktif",
+                "tanggal_daftar": datetime.now().strftime("%Y-%m-%d"),
                 "email": email,
                 "no_hp": no_hp,
                 "alamat": alamat,
@@ -215,22 +215,22 @@ def stat_seller():
         akun_id = seller_list[no_char - 1]
         pilih = tamp_bos("4.1")
         if pilih == "1 │ Aktifkan Akun":
-            if akun[akun_id]["status"] == "Aktif":
+            if akun[akun_id]["status_user"] == "Aktif":
                 pesan_peringatan("Akun sudah dalam status Aktif!", Fore.YELLOW, 15)
                 inp_enter()
                 continue
             else:
-                akun[akun_id]["status"] = "Aktif"
+                akun[akun_id]["status_user"] = "Aktif"
                 save_akun_to_csv(akun)
                 pesan_berhasil("Akun berhasil diaktifkan!")
                 inp_enter()
         elif pilih == "2 │ Nonaktifkan Akun":
-            if akun[akun_id]["status"] == "Nonaktif":
+            if akun[akun_id]["status_user"] == "Nonaktif":
                 pesan_peringatan("Akun sudah dalam status Nonaktif!", Fore.YELLOW, 15)
                 inp_enter()
                 continue
             else:
-                akun[akun_id]["status"] = "Nonaktif"
+                akun[akun_id]["status_user"] = "Nonaktif"
                 save_akun_to_csv(akun)
                 pesan_berhasil("Akun berhasil dinonaktifkan!")
                 inp_enter()
@@ -276,8 +276,8 @@ def daftar_konsumen():
             id_key,
             user["us"],
             user["role"],
-            user["status"],
-            user["tgl"]])
+            user["status_user"],
+            user["tanggal_daftar"]])
     table.align["NO", " ID ", "  USERNAME  ", " ROLE ", " STATUS ", "TERDAFTAR"] ="l"
     table_str = table.get_string()
     for line in table_str.split("\n"):
@@ -305,22 +305,22 @@ def stat_konsumen():
         akun_id = konsumen_list[no_char - 1]
         pilih = tamp_bos("4.1")
         if pilih == "1 │ Aktifkan Akun":
-            if akun[akun_id]["status"] == "Aktif":
+            if akun[akun_id]["status_user"] == "Aktif":
                 pesan_peringatan("Akun sudah dalam status Aktif!", Fore.YELLOW, 15)
                 inp_enter()
                 continue
             else:
-                akun[akun_id]["status"] = "Aktif"
+                akun[akun_id]["status_user"] = "Aktif"
                 save_akun_to_csv(akun)
                 pesan_berhasil("Akun berhasil diaktifkan!")
                 inp_enter()
         elif pilih == "2 │ Nonaktifkan Akun":
-            if akun[akun_id]["status"] == "Nonaktif":
+            if akun[akun_id]["status_user"] == "Nonaktif":
                 pesan_peringatan("Akun sudah dalam status Nonaktif!", Fore.YELLOW, 15)
                 inp_enter()
                 continue
             else:
-                akun[akun_id]["status"] = "Nonaktif"
+                akun[akun_id]["status_user"] = "Nonaktif"
                 save_akun_to_csv(akun)
                 pesan_berhasil("Akun berhasil dinonaktifkan!")
                 inp_enter()
@@ -342,7 +342,7 @@ def daftar_produk():
     for idx, p in enumerate(produk_list, start=1):
         table.add_row([
             idx,
-            p["id"],
+            p["id_produk"],
             p["varian"],
             p["kemasan"],
             f"{p['harga']}",
@@ -421,14 +421,12 @@ def lihat_data_diri(current_user):
 
 def edit_data_diri(current_user):
     print(Fore.BLUE + "  > Lewati jika tidak ingin mengubah data.\n" + Style.RESET_ALL)
-
     pertanyaan = [
         inquirer.Text("nama", message="Username baru", default=current_user.get("us", "")),
         inquirer.Text("password", message="Password baru", default=current_user.get("pw", "")),
         inquirer.Text("email", message="Email baru", default=current_user.get("email", "")),
         inquirer.Text("no_hp", message="No. HP baru", default=current_user.get("no_hp", "")),
-        inquirer.Text("alamat", message="Alamat baru", default=current_user.get("alamat", "")),
-    ]
+        inquirer.Text("alamat", message="Alamat baru", default=current_user.get("alamat", ""))]
     jawaban = inquirer.prompt(pertanyaan)
     if jawaban is None:
         return
@@ -448,8 +446,8 @@ def edit_data_diri(current_user):
     current_user["no_hp"] = no_hp_val
     current_user["alamat"] = jawaban["alamat"] or current_user["alamat"]
 
-    if "id" in current_user:
-        akun[current_user["id"]] = current_user
+    if "id_user" in current_user:
+        akun[current_user["id_user"]] = current_user
         save_akun_to_csv(akun)
     pesan_berhasil("Data akun berhasil diubah!")
 
@@ -514,7 +512,7 @@ def create_produk():
         return
 
     kode = varian[0].upper()
-    existing_ids = [p["id"] for p in produk_list if p["id"].startswith(kode)]
+    existing_ids = [p["id_produk"] for p in produk_list if p["id_produk"].startswith(kode)]
     max_num = 0
     for pid in existing_ids:
         tail = pid[1:]
@@ -525,7 +523,7 @@ def create_produk():
     new_id = f"{kode}{max_num + 1}"
 
     produk_baru = {
-        "id": new_id,
+        "id_produk": new_id,
         "varian": varian,
         "kemasan": kemasan_map[jawaban["kemasan"]],
         "harga": harga,
@@ -544,15 +542,15 @@ def update_produk():
         return
     pilihan_id = [
         inquirer.List(
-            "id_produk",
+            "produk",
             message="Pilih produk yang akan diubah",
-            choices=[f"{p['id']} │ {p['varian']} ({p['kemasan']})" for p in produk_list])]
+            choices=[f"{p['id_produk']} │ {p['varian']} ({p['kemasan']})" for p in produk_list])]
     jawaban = inquirer.prompt(pilihan_id)
     if jawaban is None:
         return
-    teks = jawaban["id_produk"]
+    teks = jawaban["produk"]
     id_terpilih = teks.split(" │ ")[0].strip()
-    produk = next((p for p in produk_list if p["id"] == id_terpilih), None)
+    produk = next((p for p in produk_list if p["id_produk"] == id_terpilih), None)
 
     if not produk:
         pesan_peringatan("Produk tidak ditemukan!", Fore.RED, 12)       
@@ -563,7 +561,7 @@ def update_produk():
     print("")
     table = PrettyTable()
     table.field_names = ["    NAMA    ", "         DATA         "]
-    table.add_row(["ID", produk["id"]])
+    table.add_row(["ID", produk["id_produk"]])
     table.add_row(["Varian", produk["varian"]])
     table.add_row(["Kemasan", produk["kemasan"]])
     table.add_row(["Harga", f"Rp{produk['harga']}"])
@@ -611,15 +609,15 @@ def delete_produk():
         return
     pilihan_id = [
         inquirer.List(
-            "id_produk",
+            "produk",
             message="Pilih produk yang akan dihapus",
-            choices=[f"{p['id']} │ {p['varian']} ({p['kemasan']})" for p in produk_list])]
+            choices=[f"{p['id_produk']} │ {p['varian']} ({p['kemasan']})" for p in produk_list])]
     jawaban = inquirer.prompt(pilihan_id)
     if jawaban is None:
         return
-    teks = jawaban["id_produk"]
+    teks = jawaban["produk"]
     id_terpilih = teks.split(" │ ")[0].strip()
-    produk = next((p for p in produk_list if p["id"] == id_terpilih), None)
+    produk = next((p for p in produk_list if p["id_produk"] == id_terpilih), None)
 
     if not produk:
         pesan_peringatan("Produk tidak ditemukan!", Fore.RED, 12)       

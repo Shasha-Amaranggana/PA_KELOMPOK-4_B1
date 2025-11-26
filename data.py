@@ -4,12 +4,12 @@ import os
 # AKUN
 # ════════════════════════════════════════════════════
 CSV_AKUN_FILE = "user.csv"
-CSV_AKUN_FIELDS = ["id", "us", "pw", "role", "status", "tgl", "email", "no_hp", "alamat", "saldo"]
+CSV_AKUN_FIELDS = ["id_user", "us", "pw", "role", "status_user", "tanggal_daftar", "email", "no_hp", "alamat", "saldo"]
 
 _default_akun = {
-    "U_B1": {"id": "U_B1", "us": "Shasha", "pw": "1", "role": "Bos", "status": "Aktif", "tgl": "2025-10-10", "email": "Shaasha04@gmail.com", "no_hp": "081348861965", "alamat": "Jalan Durian", "saldo": 0},
-    "U_S1": {"id": "U_S1", "us": "Kanja", "pw": "2", "role": "Seller", "status": "Aktif", "tgl": "2025-10-10", "email": "Kanja34@gmail.com", "no_hp": "081234567890", "alamat": "Jalan Anggur", "saldo": 0},
-    "U_K1": {"id": "U_K1", "us": "Owen", "pw": "3", "role": "Konsumen", "status": "Aktif", "tgl": "2025-10-10", "email": "Owenn00@gmail.com", "no_hp": "080987654321", "alamat": "Jalan Mangga", "saldo": 0},
+    "U_B1": {"id_user": "U_B1", "us": "Shasha", "pw": "1", "role": "Bos", "status_user": "Aktif", "tanggal_daftar": "2025-10-10", "email": "Shaasha04@gmail.com", "no_hp": "081348861965", "alamat": "Jalan Durian", "saldo": 0},
+    "U_S1": {"id_user": "U_S1", "us": "Kanja", "pw": "2", "role": "Seller", "status_user": "Aktif", "tanggal_daftar": "2025-10-10", "email": "Kanja34@gmail.com", "no_hp": "081234567890", "alamat": "Jalan Anggur", "saldo": 0},
+    "U_K1": {"id_user": "U_K1", "us": "Owen", "pw": "3", "role": "Konsumen", "status_user": "Aktif", "tanggal_daftar": "2025-10-10", "email": "Owenn00@gmail.com", "no_hp": "080987654321", "alamat": "Jalan Mangga", "saldo": 0},
     }
 
 def save_akun_to_csv(akun_dict: dict) -> None:
@@ -21,12 +21,12 @@ def save_akun_to_csv(akun_dict: dict) -> None:
             if not isinstance(user, dict):
                 continue
             writer.writerow({
-                "id": user.get("id", id_key),
+                "id_user": user.get("id_user", id_key),
                 "us": user.get("us", ""),
                 "pw": user.get("pw", ""),
                 "role": user.get("role", ""),
-                "status": user.get("status", ""),
-                "tgl": user.get("tgl", ""),
+                "status_user": user.get("status_user", ""),
+                "tanggal_daftar": user.get("tanggal_daftar", ""),
                 "email": user.get("email", ""),
                 "no_hp": user.get("no_hp", ""),
                 "alamat": user.get("alamat", ""),
@@ -38,15 +38,15 @@ def load_akun_from_csv() -> dict:
         with open(CSV_AKUN_FILE, "r", newline="", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                if not row.get("id"):
+                if not row.get("id_user"):
                     continue
-                akun_dict[str(row["id"])] = {
-                    "id": row.get("id", ""),
+                akun_dict[str(row["id_user"])] = {
+                    "id_user": row.get("id_user", ""),
                     "us": row.get("us", ""),
                     "pw": row.get("pw", ""),
                     "role": row.get("role", ""),
-                    "status": row.get("status", ""),
-                    "tgl": row.get("tgl", ""),
+                    "status_user": row.get("status_user", ""),
+                    "tanggal_daftar": row.get("tanggal_daftar", ""),
                     "email": row.get("email", ""),
                     "no_hp": row.get("no_hp", ""),
                     "alamat": row.get("alamat", ""),
@@ -67,32 +67,32 @@ except Exception:
 # ════════════════════════════════════════════════════
 
 CSV_PRODUK_FILE = "produk.csv"
-CSV_PRODUK_FIELDS = ["id", "varian", "kemasan", "harga", "stok"]
+CSV_PRODUK_FIELDS = ["id_produk", "varian", "kemasan", "harga", "stok", "status_produk"]
 
 _default_produk = [
-    {"id": "C1", "varian": "Caramel", "kemasan": "Small", "harga": 5000, "stok": 15, "status" : "Tersedia"},
-    {"id": "C2", "varian": "Caramel", "kemasan": "Medium", "harga": 10000, "stok": 25, "status" : "Tersedia"},
-    {"id": "C3", "varian": "Caramel", "kemasan": "Large", "harga": 18000, "stok": 0, "status" : "Habis"},
-    {"id": "B1", "varian": "Blueberry", "kemasan": "Small", "harga": 5000, "stok": 35, "status" : "Tersedia"},
-    {"id": "B2", "varian": "Blueberry", "kemasan": "Medium", "harga": 10000, "stok": 10, "status" : "Tersedia"},
-    {"id": "B3", "varian": "Blueberry", "kemasan": "Large", "harga": 18000, "stok": 20, "status" : "Tersedia"},
-    {"id": "M1", "varian": "Matcha", "kemasan": "Small", "harga": 5000, "stok": 30, "status" : "Tersedia"},
-    {"id": "M2", "varian": "Matcha", "kemasan": "Medium", "harga": 10000, "stok": 45, "status" : "Tersedia"},
-    {"id": "M3", "varian": "Matcha", "kemasan": "Large", "harga": 18000, "stok": 40, "status" : "Tersedia"}]
+    {"id_produk": "C1", "varian": "Caramel", "kemasan": "Small", "harga": 5000, "stok": 15, "status_produk" : "Tersedia"},
+    {"id_produk": "C2", "varian": "Caramel", "kemasan": "Medium", "harga": 10000, "stok": 25, "status_produk" : "Tersedia"},
+    {"id_produk": "C3", "varian": "Caramel", "kemasan": "Large", "harga": 18000, "stok": 0, "status_produk" : "Habis"},
+    {"id_produk": "B1", "varian": "Blueberry", "kemasan": "Small", "harga": 5000, "stok": 35, "status_produk" : "Tersedia"},
+    {"id_produk": "B2", "varian": "Blueberry", "kemasan": "Medium", "harga": 10000, "stok": 10, "status_produk" : "Tersedia"},
+    {"id_produk": "B3", "varian": "Blueberry", "kemasan": "Large", "harga": 18000, "stok": 20, "status_produk" : "Tersedia"},
+    {"id_produk": "M1", "varian": "Matcha", "kemasan": "Small", "harga": 5000, "stok": 30, "status_produk" : "Tersedia"},
+    {"id_produk": "M2", "varian": "Matcha", "kemasan": "Medium", "harga": 10000, "stok": 45, "status_produk" : "Tersedia"},
+    {"id_produk": "M3", "varian": "Matcha", "kemasan": "Large", "harga": 18000, "stok": 40, "status_produk" : "Tersedia"}]
 
 def save_produk_to_csv(produk_list: list) -> None:
     with open(CSV_PRODUK_FILE, "w", newline="", encoding="utf-8") as f:
-        fieldnames = ["id", "varian", "kemasan", "harga", "stok", "status"]
+        fieldnames = ["id_produk", "varian", "kemasan", "harga", "stok", "status_produk"]
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         for produk in produk_list:
             writer.writerow({
-                "id": produk.get("id", ""),
+                "id_produk": produk.get("id_produk", ""),
                 "varian": produk.get("varian", ""),
                 "kemasan": produk.get("kemasan", ""),
                 "harga": produk.get("harga", 0),
                 "stok": produk.get("stok", 0),
-                "status": produk.get("status", "")})
+                "status_produk": produk.get("status_produk", "")})
 
 def load_produk_from_csv() -> list:
     if os.path.exists(CSV_PRODUK_FILE):
@@ -100,17 +100,17 @@ def load_produk_from_csv() -> list:
         with open(CSV_PRODUK_FILE, "r", newline="", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                if not row.get("id"):
+                if not row.get("id_produk"):
                     continue
                 stok = int(row.get("stok", 0))
                 status = "Tersedia" if stok > 0 else "Habis"
                 produk_list.append({
-                    "id": row.get("id", ""),
+                    "id_produk": row.get("id_produk", ""),
                     "varian": row.get("varian", ""),
                     "kemasan": row.get("kemasan", ""),
                     "harga": int(row.get("harga", 0)),
                     "stok": stok,
-                    "status": status,})
+                    "status_produk": status,})
         if produk_list:
             return produk_list
     save_produk_to_csv(_default_produk)
@@ -127,11 +127,11 @@ except Exception:
 # ════════════════════════════════════════════════════
 
 CSV_PEMBELIAN_FILE = "pembelian.csv"
-CSV_PEMBELIAN_FIELDS = ["id_order", "id_produk", "varian", "kemasan", "harga", "id_user", "tanggal_pesan", "tanggal_dikirim", "tanggal_sampai", "jumlah", "total_harga", "status", "batal_oleh", "alasan"]
+CSV_PEMBELIAN_FIELDS = ["id_order", "id_produk", "varian", "kemasan", "harga", "id_user", "tanggal_pesan", "tanggal_dikirim", "tanggal_sampai", "jumlah", "total_harga", "status_order", "batal_oleh", "alasan"]
 
 _default_pembelian = {
     "U_B1": [
-        {"id_order": "O1", "id_produk": "C1", "varian": "Caramel", "kemasan": "Medium", "harga": 10000, "id_user": "U_B1", "tanggal_pesan": "2025-10-10", "tanggal_dikirim": "", "tanggal_sampai": "", "jumlah": 1, "total_harga": 10000, "status": "Dipesan", "batal_oleh": "", "alasan": ""}]}
+        {"id_order": "O1", "id_produk": "C1", "varian": "Caramel", "kemasan": "Medium", "harga": 10000, "id_user": "U_B1", "tanggal_pesan": "2025-10-10", "tanggal_dikirim": "", "tanggal_sampai": "", "jumlah": 1, "total_harga": 10000, "status_order": "Dipesan", "batal_oleh": "", "alasan": ""}]}
 
 def save_pembelian_to_csv(pembelian_dict: dict) -> None:
     with open(CSV_PEMBELIAN_FILE, "w", newline="", encoding="utf-8") as f:
@@ -151,7 +151,7 @@ def save_pembelian_to_csv(pembelian_dict: dict) -> None:
                     "tanggal_sampai": item.get("tanggal_sampai", ""),
                     "jumlah": item.get("jumlah", 0),
                     "total_harga": item.get("total_harga", 0),
-                    "status": item.get("status", ""),
+                    "status_order": item.get("status_order", ""),
                     "batal_oleh": item.get("batal_oleh", ""),
                     "alasan": item.get("alasan", "")})
 
@@ -177,7 +177,7 @@ def load_pembelian_from_csv() -> dict:
                     "tanggal_sampai": row.get("tanggal_sampai", ""),
                     "jumlah": int(row.get("jumlah", 0)),
                     "total_harga": int(row.get("total_harga", 0)),
-                    "status": row.get("status", ""),
+                    "status_order": row.get("status_order", ""),
                     "batal_oleh": row.get("batal_oleh", ""),
                     "alasan": row.get("alasan", "")})
                 
@@ -197,11 +197,11 @@ except Exception:
 # ════════════════════════════════════════════════════
 
 CSV_KERANJANG_FILE = "keranjang.csv"
-CSV_KERANJANG_FIELDS = ["id_user", "id_produk", "varian", "kemasan", "harga"]
+CSV_KERANJANG_FIELDS = ["id_user", "id_produk", "varian", "kemasan", "harga", "stok"]
 
 _default_keranjang = {
     "U_B1": [
-        {"id_produk": "C1", "varian": "Caramel", "kemasan": "Medium", "harga": 10000}]}
+        {"id_produk": "C1", "varian": "Caramel", "kemasan": "Medium", "harga": 10000, "stok": 25}],}
 
 def save_keranjang_to_csv(keranjang_dict: dict) -> None:
     with open(CSV_KERANJANG_FILE, "w", newline="", encoding="utf-8") as f:
@@ -214,7 +214,8 @@ def save_keranjang_to_csv(keranjang_dict: dict) -> None:
                     "id_produk": item.get("id_produk", ""),
                     "varian": item.get("varian", ""),
                     "kemasan": item.get("kemasan", ""),
-                    "harga": item.get("harga", 0)})
+                    "harga": item.get("harga", 0),
+                    "stok": item.get("stok", 0)})
 
 def load_keranjang_from_csv() -> dict:
     keranjang_dict = {}
@@ -231,7 +232,8 @@ def load_keranjang_from_csv() -> dict:
                     "id_produk": row.get("id_produk", ""),
                     "varian": row.get("varian", ""),
                     "kemasan": row.get("kemasan", ""),
-                    "harga": int(row.get("harga", 0))})
+                    "harga": int(row.get("harga", 0)),
+                    "stok": int(row.get("stok", 0))})
         if keranjang_dict:
             return keranjang_dict
     save_keranjang_to_csv(_default_keranjang)

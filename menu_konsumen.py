@@ -28,11 +28,11 @@ def menu_konsumen(current_user):
         elif pilih == "4 | PESANAN":
             jud_utama()
             jud_sub("Pesanan Anda")
-            pesanan(current_user)
+            pesanan_anda(current_user)
         elif pilih == "5 | RIWAYAT BELANJA":
             jud_utama()
             jud_sub("Riwayat Belanja")
-            pesanan_anda(current_user)
+
         elif pilih == "6 | SALDO":
             saldo(current_user)
         elif pilih == "7 | LOGOUT":
