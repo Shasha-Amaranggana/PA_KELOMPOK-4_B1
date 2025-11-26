@@ -8,9 +8,9 @@ def clear():
     
 def jud_utama(): 
     clear()
-    print("═"*70)
-    print("WEBSITE PENJUALAN PRODUK POPCORN".center(70))
-    print("═"*70)
+    print(Style.RESET_ALL + Fore.BLUE + ("═"*70))
+    print(Fore.BLUE + Style.BRIGHT + "WEBSITE PENJUALAN PRODUK POPCORN".center(70))
+    print(Fore.BLUE + ("═"*70) + Style.RESET_ALL)
 
 def jud_sub(judul):
     print(("═"*50).center(70))

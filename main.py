@@ -22,8 +22,8 @@ def login():
         for nomor, user in akun.items():
             if user["us"] == username and user["pw"] == password:
                 found = True
-                if user["status"].lower() != "aktif":
-                    pesan_peringatan(f"Akun '{username}' saat ini {user['status']}. Tidak bisa login!", Fore. RED, 30)
+                if user["status_user"].lower() != "aktif":
+                    pesan_peringatan(f"Akun '{username}' saat ini {user['status_user']}. Tidak bisa login!", Fore. RED, 30)
                     raise ValueError
                 pesan_berhasil(f"Login berhasil! Selamat datang, {username}!")
                 inp_enter()
@@ -81,12 +81,12 @@ def register():
         new_id = f"U_K{last_num + 1}"
         akun.update({
             new_id: {
-                "id": new_id,
+                "id_user": new_id,
                 "us": username,
                 "pw": password,
                 "role": "Konsumen",
-                "status": "Aktif",
-                "tgl": datetime.now().strftime("%Y-%m-%d"),
+                "status_user": "Aktif",
+                "tanggal_daftar": datetime.now().strftime("%Y-%m-%d"),
                 "email": email,
                 "no_hp": no_hp,
                 "alamat": alamat,
