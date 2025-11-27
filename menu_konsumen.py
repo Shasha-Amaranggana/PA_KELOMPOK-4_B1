@@ -66,7 +66,7 @@ def menu_konsumen(current_user):
             pesan_berhasil("Logout Berhasil!")
             break
 
-# MENU AKUNF
+# MENU AKUN
 # ════════════════════════════════════════════════════
 def menu_akun(current_user):
     while True:
