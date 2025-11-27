@@ -37,7 +37,7 @@ def tamp_sell(jenis):
         "2.1" : ['1 │ LIHAT DATA DIRI'.center(37), '2 │ EDIT DATA DIRI'.center(36), '3 │ KEMBALI'.center(29)],
         "2.2" : ['1 │ TAMBAH PRODUK'.center(35), '2 │ LIHAT PRODUK'.center(34), '3 │ EDIT PRODUK'.center(33), '4 │ HAPUS PRODUK'.center(34), '5 │ KEMBALI'.center(29)],
         "2.3" : ['1 │ LIHAT RINGKASAN PEMBELIAN'.center(47), '2 │ KEMBALI'.center(29)],
-        "2.4" : ['1 │ LIHAT PEMESANAN'.center(37), '2 │ UBAH STATUS PESANAN'.center(42), '3 │ LIHAT STATUS PESANAN'.center(41), '4 │ HAPUS PEMESANAN'.center(37), '5 │ KEMBALI'.center(29)]}
+        "2.4" : ['1 │ LIHAT PEMESANAN'.center(37), '2 │ UBAH STATUS PESANAN'.center(42), '3 │ LIHAT STATUS PESANAN'.center(41), '4 │ KEMBALI'.center(29)]}
     choices = daftar_menu[jenis]
     answer = inquirer.prompt([
         inquirer.List(
@@ -551,6 +551,10 @@ def create_produk():
     try:
         harga = int(jawaban["harga"])
         stok = int(jawaban["stok"])
+        if harga < 0:
+            error_1.append("Harga tidak boleh negatif!")
+        if stok < 0:
+            error_1.append("Stok tidak boleh negatif!")
     except ValueError:
         error_1.append("Harga dan stok harus berupa angka!")
     if error_1:
@@ -641,8 +645,16 @@ def update_produk():
         try:
             produk["varian"] = jawab_update["varian"] or produk["varian"]
             produk["kemasan"] = kemasan_map[jawab_update["kemasan"]] or produk["kemasan"]
-            produk["harga"] = int(jawab_update["harga"])
-            produk["stok"] = int(jawab_update["stok"])
+            if jawab_update["harga"]:
+                harga_baru = int(jawab_update["harga"])
+                if harga_baru < 0:
+                    raise ValueError("Harga tidak boleh negatif")
+                produk["harga"] = harga_baru
+            if jawab_update["stok"]:
+                stok_baru = int(jawab_update["stok"])
+                if stok_baru < 0:
+                    raise ValueError("Stok tidak boleh negatif")
+                produk["stok"] = stok_baru
             save_produk_to_csv(produk_list)
             pesan_berhasil("Data produk berhasil diubah!")
         except ValueError:
@@ -764,11 +776,7 @@ def menu_pemesanan():
             lihat_status_pesanan()
             print("")
             inp_enter()
-        elif pilihan == "4 │ HAPUS PEMESANAN":
-            hapus_pemesanan()
-            print("")
-            inp_enter()
-        elif pilihan == "5 │ KEMBALI":
+        elif pilihan == "4 │ KEMBALI":
             break
 
 
@@ -960,66 +968,6 @@ def lihat_status_pesanan():
         print(line.center(70))
 
     return True 
-
-def hapus_pemesanan():
-    jud_utama()
-    jud_sub("Hapus Pesanan Dibatalkan")
-    if not pesanan_NoDipesan:
-        pesan_peringatan("Tidak ada pesanan yang dapat dihapus!", Fore.YELLOW, 12)
-        return
-
-    pilihan_id = [
-        inquirer.List(
-            "pesanan",
-            message="Pilih pesanan yang ingin dihapus",
-            choices=[f"{p['id_order']} │ {p['varian']} ({p['kemasan']}) │ Rp{p['total_harga']}" for p in pesanan_NoDipesan])]
-    jawaban = inquirer.prompt(pilihan_id)
-    if not jawaban:
-        return
-    teks = jawaban["pesanan"]
-    id_order = teks.split(" │ ")[0].strip()
-    pesanan = next((p for p in pesanan_NoDipesan if p["id_order"] == id_order), None)
-    if not pesanan:
-        pesan_peringatan("Pesanan tidak ditemukan!", Fore.RED, 12)
-        return
-    id_user = pesanan["id_user"]
-
-    print(("═"*50).center(70))
-    print("")
-    table = PrettyTable()
-    table.field_names = ["    NAMA    ", "         DATA         "]
-    table.add_row(["ID Order", pesanan["id_order"]])
-    table.add_row(["ID User", pesanan["id_user"]])
-    table.add_row(["ID Produk", pesanan["id_produk"]])
-    table.add_row(["Varian", pesanan["varian"]])
-    table.add_row(["Kemasan", pesanan["kemasan"]])
-    table.add_row(["Tanggal Dipesan", pesanan["tanggal_pesan"]])
-    table.add_row(["Jumlah", pesanan["jumlah"]])
-    table.add_row(["Total Harga", f"Rp{pesanan['total_harga']}"])
-    table.align["    NAMA    "] = "l"
-    table.align["         DATA         "] = "l"
-    table_str = table.get_string()
-    for line in table_str.split("\n"):
-        print(line.center(70))
-    print("")
-    print(("═"*50).center(70))
-
-    konfirmasi = [
-        inquirer.List(
-            "konfirm",
-            message=f"Yakin ingin menghapus pesanan {pesanan['varian']} ({pesanan['kemasan']})?",
-            choices=["            1 │ Ya", "            2 │ Tidak"])]
-    jawab_konfirmasi = inquirer.prompt(konfirmasi)
-    if not jawab_konfirmasi:
-        return
-    if jawab_konfirmasi["konfirm"] == "            1 │ Ya":
-        pembelian[id_user] = [p for p in pembelian[id_user] if p["id_order"] != id_order]
-        if not pembelian[id_user]:
-            del pembelian[id_user]
-    save_pembelian_to_csv(pembelian)
-
-    pesan_berhasil("Pesanan berhasil dihapus dari daftar!")
-    inp_enter()
 
 
 
@@ -1241,7 +1189,7 @@ def pesan(current_user, source_list=None):
             try:
                 jumlah = int(inp)
                 if jumlah == 0 or jumlah < 0:
-                    pesan_peringatan("Jumlah top up tidak boleh nol atau negatif!", Fore.YELLOW, 20)
+                    pesan_peringatan("Jumlah produk tidak boleh nol atau negatif!", Fore.YELLOW, 20)
                     inp_enter()
                     continue
                 elif jumlah > stok_master:
@@ -1259,8 +1207,12 @@ def pesan(current_user, source_list=None):
                 inp_enter()
                 continue
 
-            now = datetime.now().strftime("%Y%m%d")
-            id_order = f"O{now}"
+            produk_ids = []
+            for daftar in pembelian.values():
+                for order in daftar:
+                    produk_ids.append(order.get("id_order", ""))
+            last_num = max([int(k.replace("O", "")) for k in produk_ids if k.startswith("O")], default=0)
+            id_order = f"O{last_num + 1}"
 
             if id_user not in pembelian:
                 pembelian[id_user] = []
