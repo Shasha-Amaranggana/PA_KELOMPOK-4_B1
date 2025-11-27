@@ -930,7 +930,7 @@ def hapus_pemesanan():
             "pesanan",
             message="Pilih pesanan yang ingin dihapus",
             choices=[f"{p['id_order']} │ {p['varian']} ({p['kemasan']}) │ Rp{p['total_harga']}" 
-                     for p in pesanan_NoDipesan]
+                    for p in pesanan_NoDipesan]
         )
     ]
     jawaban = inquirer.prompt(pilihan_id)
