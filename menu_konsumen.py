@@ -12,7 +12,7 @@ init(autoreset=True)
 def tamp_kons(jenis):
     message = "Silakan pilih menu"
     daftar_menu = {
-        "1": ['1 │ AKUN'.center(25), '2 | LIHAT PRODUK'.center(33), '3 | KERANJANG BELANJA'.center(39),  '4 | RIWAYAT PESANAN'.center(37), '5 | SALDO'.center(27), '6 | LOGOUT'.center(27)],
+        "1": ['1 │ AKUN'.center(25), '2 | LIHAT PRODUK'.center(33), '3 | KERANJANG BELANJA'.center(39),  '4 | PESANAN ANDA'.center(37), '5 | SALDO'.center(27), '6 | LOGOUT'.center(27)],
         "2.1" : ['1 │ LIHAT DATA DIRI'.center(37), '2 │ EDIT DATA DIRI'.center(36), '3 │ KEMBALI'.center(29)],
         "2.2" : ['1 │ TAMBAH KE KERANJANG'.center(41), '2 │ PESAN SEKARANG'.center(35), '3 │ KEMBALI'.center(29)],
         "2.3" : ['1 │ HAPUS PRODUK DARI KERANJANG'.center(50), '2 │ PESAN SEKARANG'.center(35), '3 │ KEMBALI'.center(29)],
@@ -56,7 +56,7 @@ def menu_konsumen(current_user):
             jud_utama()
             jud_sub("Keranjang Belanja")
             keranjang_belanja(current_user)
-        elif pilih == "4 | RIWAYAT PESANAN":
+        elif pilih == "4 | PESANAN ANDA":
             jud_utama()
             jud_sub("Pesanan Anda")
             pesanan_anda(current_user)
@@ -66,7 +66,7 @@ def menu_konsumen(current_user):
             pesan_berhasil("Logout Berhasil!")
             break
 
-# MENU AKUN
+# MENU AKUNF
 # ════════════════════════════════════════════════════
 def menu_akun(current_user):
     while True:
@@ -644,6 +644,13 @@ def cancel_produk(current_user):
             if kembalikan_saldo:
                 saldo_back = int(produk["total_harga"] * 50/100)
                 current_user["saldo"] = int(current_user.get("saldo", 0)) + saldo_back
+                user_bos = None
+                for id_user, user in akun.items():
+                    if user.get("role") == "Bos":
+                        user_bos = id_user
+                        break
+                if user_bos:
+                    akun[user_bos]["saldo"] = max(0, int(akun[user_bos].get("saldo", 0)) - saldo_back)
                 pesan_berhasil(f"Saldo pembelian sebesar Rp{saldo_back:,} telah dikembalikan ke akun anda")
                 save_akun_to_csv(akun)
 

@@ -1,4 +1,5 @@
-id_user,id_produk,varian,kemasan,harga,stok
-U_B1,C1,Caramel,Medium,10000,25
-U_K2,C1,Caramel,Small,5000,55
-
+id_user,id_produk,varian,kemasan,harga,jumlah
+U_B1,C1,Caramel,Medium,10000,0
+U_K2,C1,Caramel,Small,5000,0
+U_K1,B1,Blueberry,Small,5000,0
+U_K1,C1,Caramel,Small,5000,0
