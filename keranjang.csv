@@ -1,3 +1,5 @@
 id_user,id_produk,varian,kemasan,harga,stok
 U_B1,C1,Caramel,Medium,10000,25
 U_K2,C1,Caramel,Small,5000,47
+U_K1,C1,Caramel,Small,5000,44
+U_K1,C2,Caramel,Medium,10000,25
