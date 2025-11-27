@@ -1,5 +1,4 @@
 import os
-import inquirer
 from colorama import Fore, Style, init
 init(autoreset=True)
 
@@ -8,9 +7,9 @@ def clear():
     
 def jud_utama(): 
     clear()
-    print(Style.RESET_ALL + Fore.BLUE + ("═"*70))
-    print(Fore.BLUE + Style.BRIGHT + "WEBSITE PENJUALAN PRODUK POPCORN".center(70))
-    print(Fore.BLUE + ("═"*70) + Style.RESET_ALL)
+    print(("═"*70))
+    print("WEBSITE PENJUALAN PRODUK POPCORN".center(70))
+    print(("═"*70))
 
 def jud_sub(judul):
     print(("═"*50).center(70))
