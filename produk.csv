@@ -1,5 +1,5 @@
 id_produk,varian,kemasan,harga,stok,status_produk
-C1,Caramel,Small,5000,55,Tersedia
+C1,Caramel,Small,5000,57,Tersedia
 C2,Caramel,Medium,10000,25,Tersedia
 C3,Caramel,Large,18000,20,Tersedia
 B1,Blueberry,Small,5000,35,Tersedia
@@ -13,7 +13,7 @@ H2,Honey Butter,Medium,13000,25,Tersedia
 H3,Honey Butter,Large,19000,45,Tersedia
 V1,Vanila,Small,5000,40,Tersedia
 V2,Vanila,Medium,10000,15,Tersedia
-V3,Vanila,Large,18000,50,Tersedia
+V3,Vanila,Large,18000,48,Tersedia
 S1,Spicy BBQ,Small,6000,40,Tersedia
 S2,Spicy BBQ,Medium,13000,25,Tersedia
 S3,Spicy BBQ,Large,19000,50,Tersedia

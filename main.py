@@ -1,10 +1,9 @@
 import inquirer
 import re
 from datetime import datetime
-from menu import menu_boss, menu_seller
+from menu import menu_bos, menu_seller, menu_konsumen
 from data import akun, save_akun_to_csv
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_enter
-from menu_konsumen import menu_konsumen
 from colorama import Fore, Style, init
 init(autoreset=True)
 
@@ -28,7 +27,8 @@ def login():
                 pesan_berhasil(f"Login berhasil! Selamat datang, {username}!")
                 inp_enter()
                 if user["role"] == "Bos":
-                    menu_boss()
+                    current_user = user
+                    menu_bos(current_user)
                 elif user["role"] == "Seller":
                     current_user = user
                     menu_seller(current_user)
@@ -48,11 +48,11 @@ def register():
     jud_utama()
     jud_sub("Silakan Registrasi")
     print(Fore.BLUE + "  > Username min 5 karakter, mengandung huruf/angka," + Style.RESET_ALL)
-    print(Fore.BLUE + "    tidak mengandung karakter spesial!" + Style.RESET_ALL)
+    print(Fore.BLUE + "    tidak mengandung simbol/karakter spesial kecuali spasi/underscore" + Style.RESET_ALL)
     print(Fore.BLUE + "  > Password min 8 karakter, mengandung huruf besar & kecil & angka," + Style.RESET_ALL)
-    print(Fore.BLUE + "    tidak mengandung karakter spesial!" + Style.RESET_ALL)
+    print(Fore.BLUE + "    simbol diperbolehkan" + Style.RESET_ALL)
     print(Fore.BLUE + "  > Email harus valid dan berakhiran '@gmail.com'" + Style.RESET_ALL)
-    print(Fore.BLUE + "  > No. HP harus valid dan berawalan '08'" + Style.RESET_ALL)
+    print(Fore.BLUE + "  > No. HP harus valid, berawalan '08', min 10 angka" + Style.RESET_ALL)
     print("")
     username = input("Username: ".center(40))
     password = input("Password: ".center(40))
@@ -64,11 +64,11 @@ def register():
             pesan_peringatan("Semua kolom harus diisi!", Fore.YELLOW, 12)
             inp_enter()
             return None
-        if not re.search(r"^[a-zA-Z0-9 ]{5,}$", username):
+        if not re.search(r"^[a-zA-Z0-9_ ]{5,}$", username):
             raise ValueError
         if not re.search(r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$", password):
             raise ValueError
-        if not no_hp.startswith("08"):
+        if not no_hp.startswith("08") or not re.fullmatch(r"08\d{8,12}", no_hp):
             raise ValueError
         if not email.endswith("@gmail.com"):
             raise ValueError
