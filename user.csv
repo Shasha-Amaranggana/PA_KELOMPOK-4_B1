@@ -1,6 +1,4 @@
 id_user,us,pw,role,status_user,tanggal_daftar,email,no_hp,alamat,saldo
-U_B1,Shasha,1,Bos,Aktif,2025-10-10,Shaasha04@gmail.com,081348861965,Jalan Durian,0
-U_K1,Owen,3,Konsumen,Aktif,2025-10-10,Owenn00@gmail.com,080987654321,Jalan Mangga,304400
-U_K2,Shasha45,Shasha45,Konsumen,Nonaktif,2025-11-26,shasha@gmail.com,081348861965,Jalan Kurniawan,0
-U_S1,Kanja,2,Seller,Aktif,2025-10-10,Kanja34@gmail.com,083812518903,Jalan Markisa,0
-U_S2,XixiXixi90,XixiXixi12,Seller,Aktif,2025-11-23,Xixi@gmail.com,081212343445,Jalan Kurma,0
+U_B1,Shasha11,Shasha11,Bos,Aktif,2025-10-10,Shaasha11@gmail.com,081348861965,Jalan Durian,0
+U_S1,Kanja22,Kanjaa22,Seller,Aktif,2025-10-10,Kanja22@gmail.com,083812518903,Jalan Markisa,0
+U_K1,Owen33,Owennn33,Konsumen,Aktif,2025-10-10,Owenn33@gmail.com,085248494138,Jalan Mangga,0

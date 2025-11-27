@@ -64,7 +64,7 @@ def register():
             pesan_peringatan("Semua kolom harus diisi!", Fore.YELLOW, 12)
             inp_enter()
             return None
-        if not re.search(r"^[a-zA-Z0-9]{5,}$", username):
+        if not re.search(r"^[a-zA-Z0-9 ]{5,}$", username):
             raise ValueError
         if not re.search(r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$", password):
             raise ValueError

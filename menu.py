@@ -428,14 +428,23 @@ def edit_data_diri(current_user):
     jawaban = inquirer.prompt(pertanyaan)
     if jawaban is None:
         return
-    
+
+    us_val = (jawaban.get("nama") or current_user.get("us") or "").strip()
+    pw_val = (jawaban.get("password") or current_user.get("pw") or "").strip()
     email_val = (jawaban.get("email") or current_user.get("email") or "").strip()
     no_hp_val = (jawaban.get("no_hp") or current_user.get("no_hp") or "").strip()
-    if not email_val.endswith("@gmail.com") or not no_hp_val.startswith("08"):
+    alamat_val = (jawaban.get("alamat") or current_user.get("alamat") or "").strip()
+    if not email_val.endswith("@gmail.com") or not no_hp_val.startswith("08") or not re.search(r"^[a-zA-Z0-9]{5,}$", us_val) or not re.search(r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$", pw_val) or alamat_val == "":
+        if not re.search(r"^[a-zA-Z0-9 ]{5,}$", us_val):
+            pesan_peringatan("Username min 5 char, ada huruf/angka, tidak ada char spesial!", Fore.YELLOW, 30)
+        if not re.search(r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$", pw_val):
+            pesan_peringatan("Password min 8 char, ada huruf dan angka, tidak ada char spesial!", Fore.YELLOW, 30)
         if not email_val.endswith("@gmail.com"):
             pesan_peringatan("Email harus valid dan berakhiran '@gmail.com'!", Fore.YELLOW, 30)
         if not no_hp_val.startswith("08"):
             pesan_peringatan("No. HP harus valid dan berawalan '08'!", Fore.YELLOW, 30)
+        if alamat_val == "":
+            pesan_peringatan("Alamat tidak boleh kosong!", Fore.YELLOW, 30)
         return
 
     current_user["us"] = jawaban["nama"] or current_user["us"]
