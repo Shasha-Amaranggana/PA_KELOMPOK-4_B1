@@ -3,12 +3,12 @@ import re
 import inquirer
 from prettytable import PrettyTable
 from datetime import datetime
-from data import akun, produk_list, keranjang, pembelian, save_produk_to_csv, save_akun_to_csv
+from data import akun, produk_list, keranjang, pembelian, save_produk_to_csv, save_akun_to_csv, save_pembelian_to_csv
 from help import jud_utama, jud_sub, pesan_berhasil, pesan_peringatan, inp_no, inp_enter
 from colorama import Fore, Style, init
 init(autoreset=True)
 
-pesanan_list = []
+
 
 # TAMPILAN MENU
 # ════════════════════════════════════════════════════
@@ -32,12 +32,11 @@ def tamp_bos(jenis):
 def tamp_sell(jenis):
     message = "Silakan pilih menu"
     daftar_menu = {
-        "1": ['1 │ AKUN'.center(25), '2 │ PENJUALAN'.center(31), '3 │ PEMBELIAN'.center(31),  '4 │ PEMESANAN'.center(31), '5 │ STATUS PEMESANAN'.center(37), '6 │ LOGOUT'.center(27)],
+        "1": ['1 │ AKUN'.center(25), '2 │ PENJUALAN'.center(31), '3 │ PEMBELIAN'.center(31),  '4 │ PEMESANAN'.center(31), '5 │ LOGOUT'.center(27)],
         "2.1" : ['1 │ LIHAT DATA DIRI'.center(37), '2 │ EDIT DATA DIRI'.center(36), '3 │ KEMBALI'.center(29)],
         "2.2" : ['1 │ TAMBAH PRODUK'.center(35), '2 │ LIHAT PRODUK'.center(34), '3 │ EDIT PRODUK'.center(33), '4 │ HAPUS PRODUK'.center(34), '5 │ KEMBALI'.center(29)],
         "2.3" : ['1 │ LIHAT RINGKASAN PEMBELIAN'.center(47), '2 │ KEMBALI'.center(29)],
-        "2.4" : ['1 │ LIHAT PEMESANAN'.center(37), '2 │ HAPUS PEMESANAN'.center(37), '3 │ KEMBALI'.center(29)],
-        "2.5" : ['1 │ BUAT STATUS AWAL PESANAN'.center(46), '2 │ LIHAT STATUS PESANAN'.center(41), '3 │ KEMBALI'.center(29)]}
+        "2.4" : ['1 │ LIHAT PEMESANAN'.center(37), '2 │ UBAH STATUS PESANAN'.center(42), '3 │ LIHAT STATUS PESANAN'.center(41), '4 │ HAPUS PEMESANAN'.center(37), '5 │ KEMBALI'.center(29)]}
     choices = daftar_menu[jenis]
     answer = inquirer.prompt([
         inquirer.List(
@@ -378,9 +377,7 @@ def menu_seller(current_user):
             menu_pembelian()
         elif pilih == "4 │ PEMESANAN":
             menu_pemesanan()
-        elif pilih == "5 │ STATUS PEMESANAN":
-            menu_status_pemesanan()
-        elif pilih == "6 │ LOGOUT":
+        elif pilih == "5 │ LOGOUT":
             pesan_berhasil("Logout Berhasil!")
             break
 
@@ -404,6 +401,7 @@ def menu_akun(current_user):
             inp_enter()
         elif pilih == "3 │ KEMBALI":
             break
+
 
 def lihat_data_diri(current_user):
     table = PrettyTable()
@@ -478,6 +476,7 @@ def menu_penjualan():
             delete_produk()
         elif pilihan == "5 │ KEMBALI":
             break
+
 
 def create_produk():
     kemasan_map = {
@@ -589,16 +588,16 @@ def update_produk():
     if jawab_update is None:
         return
 
-    produk["varian"] = jawab_update["varian"] or produk["varian"]
-    produk["kemasan"] = kemasan_map[jawab_update["kemasan"]] or produk["kemasan"]
     if jawab_update["harga"] or jawab_update["stok"]:
         try:
+            produk["varian"] = jawab_update["varian"] or produk["varian"]
+            produk["kemasan"] = kemasan_map[jawab_update["kemasan"]] or produk["kemasan"]
             produk["harga"] = int(jawab_update["harga"])
-            produk["stok"] = int(jawab_update["stok"]) 
+            produk["stok"] = int(jawab_update["stok"])
+            save_produk_to_csv(produk_list)
+            pesan_berhasil("Data produk berhasil diubah!")
         except ValueError:
             pesan_peringatan("Harga dan stok baru tidak valid! Harga dan stok lama dipertahankan.", Fore.YELLOW, 30)       
-    save_produk_to_csv(produk_list)
-    pesan_berhasil("Data produk berhasil diubah!")
     inp_enter()
 
 def delete_produk():
@@ -645,27 +644,36 @@ def delete_produk():
 def menu_pembelian():
     jud_utama()
     jud_sub("Ringkasan Pembelian")
-    global pesanan_list
-    if len(pesanan_list) == 0:
+    semua_pesanan_selesai = []
+    for id_user, daftar_pesanan in pembelian.items():
+        for p in daftar_pesanan:
+            p["id_user"] = id_user
+        pesanan_selesai = [p for p in daftar_pesanan if p.get("status_order") == "Selesai"]
+        semua_pesanan_selesai.extend(pesanan_selesai)
+
+    if not semua_pesanan_selesai:
         pesan_peringatan("Daftar pembelian masih kosong.", Fore.YELLOW, 12)
-    else:
-        total_transaksi = len(pesanan_list)
-        total_omzet = sum(p["total_harga"] for p in pesanan_list)
+        print("")
+        return None
 
-        print(f"Total Transaksi : {total_transaksi}")
-        print(f"Total Omzet     : Rp{total_omzet}")
-        print("-" * 30)
+    total_transaksi = len(semua_pesanan_selesai)
+    total_omzet = sum(p["total_harga"] for p in semua_pesanan_selesai)
 
-        table = PrettyTable()
-        table.field_names = ["NO", " ID_U ", " ID_P ", " NAMA USER ", "TOTAL HARGA", " STATUS "]
-        for idx, p in enumerate(pesanan_list, start=1):
-            table.add_row([
-                idx,
-                p["id_user"],
-                p["id_pesanan"],
-                p["nama_user"],
-                f"Rp{p['total_harga']}",
-                p.get("status_pesanan", "")])
+    print(f"Total Transaksi : {total_transaksi}")
+    print(f"Total Omzet     : Rp{total_omzet}")
+    print("-" * 30)
+
+    table = PrettyTable()
+    table.field_names = ["ID USER", "ID ORDER", "VARIAN", "KEMASAN", "JUMLAH", "TOTAL HARGA", "TANGGAL"]
+    for item in semua_pesanan_selesai:
+        table.add_row([
+            item.get("id_user"),
+            item.get("id_order"),
+            item.get("varian"),
+            item.get("kemasan"),
+            item.get("jumlah"),
+            f"Rp{int(item.get('total_harga', 0)):,}",
+            item.get("tanggal_pesan")])
         table.align["ID"] = "c"
         table.align["Nama User"] = "l"
         table.align["Total Harga"] = "r"
@@ -688,43 +696,204 @@ def menu_pemesanan():
             jud_utama()
             jud_sub("Daftar Pemesanan")
             lihat_pemesanan()
-        elif pilihan == "2 │ HAPUS PEMESANAN":
+            print("")
+            inp_enter()
+        elif pilihan == "2 │ UBAH STATUS PESANAN":
+            jud_utama()
+            jud_sub("Ubah Status Pesanan")
+            ubah_status_pesanan()
+        elif pilihan == "3 │ LIHAT STATUS PESANAN":
+            jud_utama()
+            jud_sub("Hapus Pemesanan")
+            lihat_status_pesanan()
+            print("")
+            inp_enter()
+        elif pilihan == "4 │ HAPUS PEMESANAN":
             jud_utama()
             jud_sub("Hapus Pemesanan")
             hapus_pemesanan()
             print("")
             inp_enter()
-        elif pilihan == "3 │ KEMBALI":
+        elif pilihan == "5 │ KEMBALI":
             break
 
+
 def lihat_pemesanan():
-    global pembelian
-    if len(pembelian) == 0:
-        pesan_peringatan("Daftar pemesanan masih kosong atau semua sudah diterima.", Fore.YELLOW, 12)
-        return
+    pesanan_aktif = []
+
+    for id_user, daftar_pesanan in pembelian.items():
+        for p in daftar_pesanan:
+            if p.get("status_order") == "Dipesan":
+                p["id_user"] = id_user
+                pesanan_aktif.append(p)
+
+    if not pesanan_aktif:
+        pesan_peringatan("Daftar pesanan masih kosong.", Fore.YELLOW, 12)
+        print("")
+        return None
+    
     table = PrettyTable()
-    table.field_names = ["ID", "ID U", "ID P", "VARIAN", "KEMASAN", "JUMLAH", "TOTAL HARGA", "STATUS", "TANGGAL"]
-    for psn in pembelian:
-        # Lewati yang sudah diterima
-        if psn.get("status") == "Diterima":
-            continue
+    table.field_names = ["ID", "ID U", "ID P", "VARIAN", "KEMASAN", "JML", "TOTAL HARGA", "STATUS", "TANGGAL PESAN"]
+    for p in pesanan_aktif:
         table.add_row([
-            psn.get("id_order", ""),
-            psn.get("id_user", ""),
-            psn.get("id_produk", ""),
-            psn.get("varian", ""),
-            psn.get("kemasan", ""),
-            psn.get("jumlah", 0),
-            f"Rp{psn.get('total_harga', 0)}",
-            psn.get("status", ""),
-            psn.get("tanggal_pesan", "")])
+            p.get("id_order"),
+            p["id_user"],
+            p.get("id_produk"),
+            p.get("varian"),
+            p.get("kemasan"),
+            p.get("jumlah"),
+            f"Rp{p.get('total_harga')}",
+            p.get("status_order"),
+            p.get("tanggal_pesan")])
 
     for field in table.field_names:
-        table.align[field] = "c"
+        table.align[field] = "l"
     table_str = table.get_string()
     for line in table_str.split("\n"):
         print(line.center(70))
-    inp_enter()
+
+    return True 
+
+def ubah_status_pesanan():
+    while True:
+        jud_utama()
+        jud_sub("Ubah Status Pesanan")
+
+        pesanan_awal = []
+
+        for id_user, daftar_pesanan in pembelian.items():
+            for p in daftar_pesanan:
+                if p.get("status_order") == "Dipesan":
+                    p["id_user"] = id_user
+                    pesanan_awal.append(p)
+
+        if not pesanan_awal:
+            pesan_peringatan("Daftar pesanan masih kosong.", Fore.YELLOW, 12)
+            print("")
+            return None
+        
+        pilihan_id = [
+            inquirer.List(
+                "pesanan",
+                message="Pilih pesanan yang mau statusnya diubah",
+                choices=[f"{p['id_order']} │ {p['varian']} ({p['kemasan']}) │ {p['id_user']}" for p in pesanan_awal])]
+        jawaban = inquirer.prompt(pilihan_id)
+        if jawaban is None:
+            return
+        teks = jawaban["pesanan"]
+        id_terpilih = teks.split(" │ ")[0].strip()
+
+        produk = next((p for p in pesanan_awal if p["id_order"] == id_terpilih), None)
+        if not produk:
+            pesan_peringatan("Pesanan tidak ditemukan!", Fore.RED, 12)       
+            inp_enter()
+            return
+
+        print(("═"*50).center(70))
+        print("")
+        table = PrettyTable()
+        table.field_names = ["    NAMA    ", "         DATA         "]
+        table.add_row(["ID Order", produk["id_order"]])
+        table.add_row(["ID User", produk["id_user"]])
+        table.add_row(["ID Produk", produk["id_produk"]])
+        table.add_row(["Varian", produk["varian"]])
+        table.add_row(["Kemasan", produk["kemasan"]])
+        table.add_row(["Tanggal Dipesan", produk["tanggal_pesan"]])
+        table.add_row(["Jumlah", produk["jumlah"]])
+        table.add_row(["Total Harga", f"Rp{produk['total_harga']}"])
+        table.align["    NAMA    "] = "l"
+        table.align["         DATA         "] = "l"
+        table_str = table.get_string()
+        for line in table_str.split("\n"):
+            print(line.center(70))
+        print("")
+        print(("═"*50).center(70))
+
+        aksi = [
+            inquirer.List(
+                "aksi",
+                message=f"Ingin melakukan apa pada {produk['id_order']} ini?",
+                choices=["            1 │ Kirim Produk", "            2 │ Cancel Pesanan", "            3 │ Kembali"])]
+        jawaban_aksi = inquirer.prompt(aksi)
+        if not jawaban_aksi:
+            return
+
+        if jawaban_aksi["aksi"] == "            1 │ Kirim Produk" or jawaban_aksi["aksi"] == "            2 │ Cancel Pesanan":
+            konfirmasi = [
+                inquirer.List(
+                    "konfirm",
+                    message=f"Konfirmasi ingin melakukan hal tersebut?",
+                    choices=["            1 │ Ya", "            2 │ Tidak"])]
+            jawab_konfirmasi = inquirer.prompt(konfirmasi)
+            if not jawab_konfirmasi:
+                return
+        
+            if jawab_konfirmasi["konfirm"] == "            1 │ Ya":
+
+                if jawaban_aksi["aksi"] == "            1 │ Kirim Produk":
+                    produk["status_order"] = "Dikirim"
+                    produk["tanggal_dikirim"] = datetime.now().strftime("%Y-%m-%d")
+                    save_pembelian_to_csv(pembelian)
+                    pesan_berhasil("Pesanan berhasil dikirim!")
+                    inp_enter()
+                    return
+                elif jawaban_aksi["aksi"] == "            2 │ Cancel Pesanan":
+                    alasan = input("╰┈➤ Masukkan alasan pembatalan: ").strip()
+                    produk["status_order"] = "Dibatalkan"
+                    produk["alasan"] = alasan
+                    produk["batal_oleh"] = "Seller"
+                    master = next((p for p in produk_list if p["id_produk"] == produk["id_produk"]), None)
+                    if master:
+                        master["stok"] = int(master["stok"]) + int(produk["jumlah"])
+                        save_produk_to_csv(produk_list)
+                    
+                    kembalikan_saldo = True
+                    if kembalikan_saldo:
+                        saldo_back = int(produk["total_harga"] * 75/100)
+                        id_user_pesan = produk["id_user"]
+                        user_yang_pesan = akun.get(id_user_pesan)
+                        if user_yang_pesan:
+                            user_yang_pesan["saldo"] = int(user_yang_pesan.get("saldo", 0)) + saldo_back
+                            save_akun_to_csv(akun)
+                            pesan_berhasil(f"Saldo pembelian sebesar Rp{saldo_back:,} telah dikembalikan ke akun yang bersangkutan!")
+                    save_pembelian_to_csv(pembelian)
+                    pesan_berhasil("Produk berhasil dibatalkan!")
+                    inp_enter()
+                    return
+            elif jawab_konfirmasi["konfirm"] == "            2 │ Tidak":
+                pesan_peringatan("Produk batal untuk diubah statusnya!", Fore.RED, 12)
+                inp_enter()
+                return
+        else:
+            return
+
+def lihat_status_pesanan():
+    global pesanan_list
+    if len(pesanan_list) == 0:
+        pesan_peringatan("Daftar pemesanan masih kosong.", Fore.YELLOW, 12)
+        return
+    else:
+        table = PrettyTable()
+        table.field_names = [
+            "ID Pesanan",
+            "Nama User",
+            "Produk",
+            "Jumlah",
+            "Total Harga",
+            "Status"]
+
+        for psn in pesanan_list:
+            table.add_row([
+                psn["id_pesanan"],
+                psn["nama_user"],
+                psn["produk"],
+                psn["jumlah"],
+                f"Rp{psn['total_harga']}",
+                psn.get("status_pesanan", "(belum ada status)")])
+        for field in table.field_names:
+            table.align[field] = "c"
+        table.align["Produk"] = "l"
+        print(table)
 
 def hapus_pemesanan():
     global pesanan_list
@@ -764,90 +933,3 @@ def hapus_pemesanan():
     else:
         pesan_peringatan("Pemesanan batal dihapus.", Fore.RED, 12)
     inp_enter()
-
-# MENU STATUS PEMESANAN
-# ════════════════════════════════════════════════════
-def menu_status_pemesanan():
-    while True:
-        jud_utama()
-        jud_sub("Menu Status Pemesanan")
-        pilihan = tamp_sell("2.5")
-        if pilihan == "1 │ BUAT STATUS AWAL PESANAN":
-            jud_utama()
-            jud_sub("Status Awal Pesanan")
-            buat_status_pesanan_awal()
-            print("")
-            inp_enter()
-        elif pilihan == "2 │ LIHAT STATUS PESANAN":
-            jud_utama()
-            jud_sub("Lihat Status Pemesanan")
-            lihat_status_pesanan()
-            print("")
-            inp_enter()
-        elif pilihan == "3 │ KEMBALI":
-            break
-
-def buat_status_pesanan_awal():
-    pesanan_tanpa_status = [p for p in pesanan_list if not p.get("status_pesanan")]
-
-    if not pesanan_tanpa_status:
-        pesan_peringatan("Tidak ada pesanan yang belum memiliki status.", Fore.YELLOW, 20)
-        return
-
-    pilihan_pesanan = [
-        inquirer.List(
-            "id_pesanan",
-            message="Pilih pesanan yang akan diberi status awal:",
-            choices=[f"{p['id_pesanan']} - {p['nama_user']} ({p['produk']})" for p in pesanan_tanpa_status])]
-    jawaban = inquirer.prompt(pilihan_pesanan)
-    if jawaban is None:
-        return
-
-    teks = jawaban["id_pesanan"]
-    id_terpilih = int(teks.split(" - ")[0])
-
-    pesanan = next((p for p in pesanan_list if p["id_pesanan"] == id_terpilih), None)
-
-    if not pesanan:
-        pesan_peringatan("Pesanan tidak ditemukan.", Fore.RED, 12)
-        return
-
-    status_awal_choices = ["Menunggu", "Diproses", "Dikonfirmasi"]
-    tanya_status = [
-        inquirer.List(
-            "status_awal",
-            message="Pilih status pesanan awal:",
-            choices=status_awal_choices)]
-    jawab_status = inquirer.prompt(tanya_status)
-    if jawab_status is None:
-        return
-    pesanan["status_pesanan"] = jawab_status["status_awal"]
-    pesan_berhasil(f"Status pesanan ID {pesanan['id_pesanan']} berhasil diatur menjadi '{pesanan['status_pesanan']}'.")
-
-def lihat_status_pesanan():
-    global pesanan_list
-    if len(pesanan_list) == 0:
-        pesan_peringatan("Daftar pemesanan masih kosong.", Fore.YELLOW, 12)
-        return
-    else:
-        table = PrettyTable()
-        table.field_names = [
-            "ID Pesanan",
-            "Nama User",
-            "Produk",
-            "Jumlah",
-            "Total Harga",
-            "Status"]
-
-        for psn in pesanan_list:
-            table.add_row([
-                psn["id_pesanan"],
-                psn["nama_user"],
-                psn["produk"],
-                psn["jumlah"],
-                f"Rp{psn['total_harga']}",
-                psn.get("status_pesanan", "(belum ada status)")])
-        for field in table.field_names:
-            table.align[field] = "c"
-        table.align["Produk"] = "l"
-        print(table)
