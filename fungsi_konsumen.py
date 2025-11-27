@@ -644,4 +644,3 @@ def top_up(current_user):
         except ValueError:
             pesan_peringatan("Input tidak valid! Silakan masukkan angka.", Fore.YELLOW, 30)
             inp_enter()
-

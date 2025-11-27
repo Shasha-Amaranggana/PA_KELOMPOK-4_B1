@@ -2,3 +2,4 @@ id_order,id_produk,varian,kemasan,harga,id_user,tanggal_pesan,tanggal_dikirim,ta
 O1,C1,Caramel,Small,5000,U_B1,2025-10-10,,,2,10000,Dipesan,,
 O20251126,B3,Blueberry,Large,18000,U_K1,2025-11-26,,,1,18000,Dibatalkan,Owen,"Nggak niat, huft"
 O20251126,C1,Caramel,Small,5000,U_K1,2025-11-26,,,1,5000,Dipesan,,
+O20251126,C2,Caramel,Medium,10000,U_K1,2025-11-26,,,2,20000,Dipesan,,

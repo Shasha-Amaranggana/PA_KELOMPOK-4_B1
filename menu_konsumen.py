@@ -25,16 +25,12 @@ def menu_konsumen(current_user):
             jud_utama()
             jud_sub("Keranjang Belanja")
             keranjang_belanja(current_user)
-        elif pilih == "4 | PESANAN":
+        elif pilih == "4 | RIWAYAT PESANAN":
             jud_utama()
             jud_sub("Pesanan Anda")
             pesanan_anda(current_user)
-        elif pilih == "5 | RIWAYAT BELANJA":
-            jud_utama()
-            jud_sub("Riwayat Belanja")
-
-        elif pilih == "6 | SALDO":
+        elif pilih == "5 | SALDO":
             saldo(current_user)
-        elif pilih == "7 | LOGOUT":
+        elif pilih == "6 | LOGOUT":
             pesan_berhasil("Logout Berhasil!")
             break
